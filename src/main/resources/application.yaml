@@ -4,7 +4,7 @@ spring:
       secret-key: ${JWT_SECRET_KEY}
       expiration-milliseconds: ${JWT_EXPIRATION}
   config:
-    import: "optional:file:database.properties"
+    import: "optional:file:application.properties"
   application:
     name: blue-bay
   datasource:
