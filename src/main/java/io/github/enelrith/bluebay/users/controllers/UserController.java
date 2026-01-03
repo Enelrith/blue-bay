@@ -2,8 +2,8 @@ package io.github.enelrith.bluebay.users.controllers;
 
 
 import io.github.enelrith.bluebay.security.services.AuthService;
-import io.github.enelrith.bluebay.users.dto.LoginRequest;
-import io.github.enelrith.bluebay.users.dto.LoginResponse;
+import io.github.enelrith.bluebay.security.dto.LoginRequest;
+import io.github.enelrith.bluebay.security.dto.LoginResponse;
 import io.github.enelrith.bluebay.users.dto.RegisterUserRequest;
 import io.github.enelrith.bluebay.users.dto.RegisterUserResponse;
 import io.github.enelrith.bluebay.users.services.UserService;

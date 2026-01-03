@@ -2,8 +2,8 @@ package io.github.enelrith.bluebay.security.services;
 
 import io.github.enelrith.bluebay.security.RefreshTokenRepository;
 import io.github.enelrith.bluebay.security.entities.RefreshToken;
-import io.github.enelrith.bluebay.users.dto.LoginRequest;
-import io.github.enelrith.bluebay.users.dto.LoginResponse;
+import io.github.enelrith.bluebay.security.dto.LoginRequest;
+import io.github.enelrith.bluebay.security.dto.LoginResponse;
 import io.github.enelrith.bluebay.users.entities.User;
 import io.github.enelrith.bluebay.users.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 /**
  * Handles the authentication of the user during login

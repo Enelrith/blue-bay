@@ -1,4 +1,4 @@
-package io.github.enelrith.bluebay.users.dto;
+package io.github.enelrith.bluebay.security.dto;
 
 import java.io.Serializable;
 
