@@ -4,6 +4,7 @@ import io.github.enelrith.bluebay.security.RefreshTokenRepository;
 import io.github.enelrith.bluebay.security.entities.RefreshToken;
 import io.github.enelrith.bluebay.security.dto.LoginRequest;
 import io.github.enelrith.bluebay.security.dto.LoginResponse;
+import io.github.enelrith.bluebay.security.exceptions.InvalidRefreshTokenException;
 import io.github.enelrith.bluebay.users.entities.User;
 import io.github.enelrith.bluebay.users.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -55,5 +56,27 @@ public class AuthService {
         }
 
         return null;
+    }
+
+    /**
+     * Validates the provided refresh token and returns a new access token.
+     *
+     * @param refreshTokenString the refresh token provided by the client
+     * @return a newly generated access token for the associated user
+     * @throws InvalidRefreshTokenException when the refresh token is invalid, expired, or revoked
+     */
+    public String refresh(String refreshTokenString) {
+        var refreshToken = getRefreshToken(refreshTokenString);
+        if (refreshToken == null) throw new InvalidRefreshTokenException("Invalid refresh token");
+
+        User user = refreshToken.getUser();
+
+        return jwtService.generateAccessToken(user, jwtService.getJwtAccessExpiration());
+    }
+
+    private RefreshToken getRefreshToken(String refreshTokenString) {
+        var refreshToken = refreshTokenRepository.findByToken(refreshTokenString).orElse(null);
+        if (refreshToken == null || Instant.now().isAfter(refreshToken.getExpiresAt()) || refreshToken.isRevoked()) return null;
+        return refreshToken;
     }
 }
