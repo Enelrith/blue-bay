@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity for the "refresh_tokens" table in the database
+ */
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshToken {
