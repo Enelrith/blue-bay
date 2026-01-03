@@ -35,7 +35,7 @@ public class AuthService {
         var user = (User) auth.getPrincipal();
 
         if (user != null) {
-            String jwtToken = jwtService.generateToken(user);
+            String jwtToken = jwtService.generateToken(user, jwtService.getJwtAccessExpiration());
             return new LoginResponse(jwtToken, "Bearer", user.getEmail());
         }
 
