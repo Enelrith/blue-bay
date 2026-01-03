@@ -2,7 +2,8 @@ spring:
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
-      expiration-milliseconds: ${JWT_EXPIRATION}
+      access-expiration-ms: ${JWT_ACCESS_EXPIRATION}
+      refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION}
   config:
     import: "optional:file:application.properties"
   application:

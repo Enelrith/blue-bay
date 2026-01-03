@@ -30,21 +30,36 @@ public class JwtService {
     private String secretKey;
 
     /**
-     * The expiration time (in milliseconds) for the generated JWTs.
+     * The expiration time (in milliseconds) for the generated access JWTs.
      * Loaded from the application properties.
      */
-    @Value("${spring.security.jwt.expiration-milliseconds}")
+    @Value("${spring.security.jwt.access-expiration-ms}")
     @Getter
     private long jwtAccessExpiration;
 
     /**
-     * Generates a JWT token for the user
+     * The expiration time (in milliseconds) for the generated refresh JWTs.
+     * Loaded from the application properties.
+     */
+    @Value("${spring.security.jwt.refresh-expiration-ms}")
+    @Getter
+    private long jwtRefreshExpiration;
+
+    public String generateAccessToken(User user, long jwtAccessExpiration) {
+        return generateToken(user, jwtAccessExpiration);
+    }
+
+    public String generateRefreshToken(User user, long jwtRefreshExpiration) {
+        return generateToken(user, jwtRefreshExpiration);
+    }
+    /**
+     * Generates a JWT token
      *
      * @param user the user the token will be created for
      * @param jwtExpiration when the token expires
      * @return the generated JWT token
      */
-    public String generateToken(User user, long jwtExpiration) {
+    private String generateToken(User user, long jwtExpiration) {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("id", user.getId())

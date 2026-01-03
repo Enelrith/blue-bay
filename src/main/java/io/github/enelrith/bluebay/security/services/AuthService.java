@@ -1,5 +1,7 @@
 package io.github.enelrith.bluebay.security.services;
 
+import io.github.enelrith.bluebay.security.RefreshTokenRepository;
+import io.github.enelrith.bluebay.security.entities.RefreshToken;
 import io.github.enelrith.bluebay.users.dto.LoginRequest;
 import io.github.enelrith.bluebay.users.dto.LoginResponse;
 import io.github.enelrith.bluebay.users.entities.User;
@@ -8,6 +10,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Handles the authentication of the user during login
@@ -18,6 +23,7 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
 
     /**
@@ -35,8 +41,18 @@ public class AuthService {
         var user = (User) auth.getPrincipal();
 
         if (user != null) {
-            String jwtToken = jwtService.generateToken(user, jwtService.getJwtAccessExpiration());
-            return new LoginResponse(jwtToken, "Bearer", user.getEmail());
+            String jwtAccessToken = jwtService.generateAccessToken(user, jwtService.getJwtAccessExpiration());
+            String jwtRefreshTokenString = jwtService.generateRefreshToken(user, jwtService.getJwtRefreshExpiration());
+
+            var refreshToken = new RefreshToken();
+            refreshToken.setToken(jwtRefreshTokenString);
+            refreshToken.setCreatedAt(Instant.now());
+            refreshToken.setExpiresAt(refreshToken.getCreatedAt().plusMillis(jwtService.getJwtRefreshExpiration()));
+            refreshToken.setUser(user);
+
+            refreshTokenRepository.save(refreshToken);
+
+            return new LoginResponse(jwtAccessToken, jwtRefreshTokenString,"Bearer", user.getEmail());
         }
 
         return null;
