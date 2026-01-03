@@ -1,0 +1,15 @@
+spring:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
+      expiration-milliseconds: ${JWT_EXPIRATION}
+  config:
+    import: "optional:file:database.properties"
+  application:
+    name: blue-bay
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
