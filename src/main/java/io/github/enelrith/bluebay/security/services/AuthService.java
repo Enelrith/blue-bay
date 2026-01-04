@@ -1,6 +1,6 @@
 package io.github.enelrith.bluebay.security.services;
 
-import io.github.enelrith.bluebay.security.RefreshTokenRepository;
+import io.github.enelrith.bluebay.security.repositories.RefreshTokenRepository;
 import io.github.enelrith.bluebay.security.entities.RefreshToken;
 import io.github.enelrith.bluebay.security.dto.LoginRequest;
 import io.github.enelrith.bluebay.security.dto.LoginResponse;
