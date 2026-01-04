@@ -42,8 +42,7 @@ public class UserService {
     }
 
     public GetUserResponse getUserById(Long id) {
-        var currentUserId = SecurityUtil.getCurrentUserId();
-        if (!id.equals(currentUserId)) throw new ForbiddenAccessException("You are not allowed to access this content");
+        isUserForbidden(id);
 
         var user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -60,5 +59,9 @@ public class UserService {
     }
     private boolean userExists(Long id) {
         return userRepository.existsById(id);
+    }
+    private void isUserForbidden(Long id) {
+        var currentUserId = SecurityUtil.getCurrentUserId();
+        if (!id.equals(currentUserId)) throw new ForbiddenAccessException("You are not allowed to access this content");
     }
 }
