@@ -1,5 +1,6 @@
 package io.github.enelrith.bluebay.exceptions;
 
+import io.github.enelrith.bluebay.properties.exceptions.PropertyAlreadyExistsException;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
 import io.github.enelrith.bluebay.users.exceptions.UserAlreadyExistsException;
 import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
@@ -70,5 +71,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenAccessException.class)
     public ResponseEntity<String> handleException(ForbiddenAccessException e){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
+
+    @ExceptionHandler(PropertyAlreadyExistsException.class)
+    public ResponseEntity<String> handleException(PropertyAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }
