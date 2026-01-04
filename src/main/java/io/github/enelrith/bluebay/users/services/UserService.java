@@ -2,9 +2,7 @@ package io.github.enelrith.bluebay.users.services;
 
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
 import io.github.enelrith.bluebay.security.utilities.SecurityUtil;
-import io.github.enelrith.bluebay.users.dto.GetUserResponse;
-import io.github.enelrith.bluebay.users.dto.RegisterUserRequest;
-import io.github.enelrith.bluebay.users.dto.RegisterUserResponse;
+import io.github.enelrith.bluebay.users.dto.*;
 import io.github.enelrith.bluebay.users.exceptions.UserAlreadyExistsException;
 import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
 import io.github.enelrith.bluebay.users.mappers.UserMapper;
@@ -58,6 +56,26 @@ public class UserService {
         isUserForbidden(id);
 
         userRepository.deleteById(id);
+    }
+
+    public UpdateUserEmailResponse updateUserEmailById(Long id, String email) {
+        isUserForbidden(id);
+
+        var user =  userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setEmail(email);
+        userRepository.save(user);
+
+        return userMapper.toUpdateUserEmailResponse(user);
+    }
+
+    public UpdateUserPasswordResponse updateUserPasswordById(Long id, String password) {
+        isUserForbidden(id);
+
+        var user =  userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+
+        return userMapper.toUpdateUserPasswordResponse(user);
     }
     /**
      * Checks if a user with a specific email exists

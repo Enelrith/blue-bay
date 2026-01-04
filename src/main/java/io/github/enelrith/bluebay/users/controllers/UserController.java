@@ -4,9 +4,7 @@ package io.github.enelrith.bluebay.users.controllers;
 import io.github.enelrith.bluebay.security.services.AuthService;
 import io.github.enelrith.bluebay.security.dto.LoginRequest;
 import io.github.enelrith.bluebay.security.dto.LoginResponse;
-import io.github.enelrith.bluebay.users.dto.GetUserResponse;
-import io.github.enelrith.bluebay.users.dto.RegisterUserRequest;
-import io.github.enelrith.bluebay.users.dto.RegisterUserResponse;
+import io.github.enelrith.bluebay.users.dto.*;
 import io.github.enelrith.bluebay.users.services.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -54,5 +52,17 @@ public class UserController {
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/email")
+    public ResponseEntity<UpdateUserEmailResponse> updateUserEmail(@PathVariable Long id,
+                                                                   @Valid @RequestBody UpdateUserEmailRequest request) {
+        return ResponseEntity.ok(userService.updateUserEmailById(id, request.email()));
+    }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<UpdateUserPasswordResponse> updateUserPassword(@PathVariable Long id,
+                                                                         @Valid @RequestBody UpdateUserPasswordRequest request) {
+        return ResponseEntity.ok(userService.updateUserPasswordById(id, request.password()));
     }
 }
