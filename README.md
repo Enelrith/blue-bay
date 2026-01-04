@@ -96,17 +96,19 @@ The application will start on `http://localhost:8080`
 #### Register User
 ```http
 POST /users/register
-
+```
+```json
 {
   "email": "email@example.com",
-  "password": "password123",
+  "password": "password123"
 }
 ```
 
 #### Login
 ```http
 POST /users/login
-
+```
+```json
 {
   "email": "email@example.com",
   "password": "password123"
@@ -116,9 +118,27 @@ POST /users/login
 **Response:**
 ```json
 {
-  "token": "your_jwt_token",
+  "accessToken": "your_access_jwt_token",
+  "refreshToken": "your_refresh_jwt_token",
   "type": "Bearer",
   "email": "email@example.com"
+}
+```
+#### Refresh
+```http
+POST /auth/refresh
+```
+```json
+{
+  "refreshToken": "your_refresh_jwt_token"
+}
+```
+
+**Response:**
+```json
+{
+"accessToken": "your_new_jwt_acess_token",
+"type": "Bearer"
 }
 ```
 
@@ -135,8 +155,9 @@ Current entities include:
 
 - **User** - User account information
 - **UserInformation** - Additional user information
-- **Properties** - Property information
-- **Bookings** - Junction table for users and properties. Infomation about user bookings.
+- **Property** - Property information
+- **Booking** - Junction table for users and properties. Information about user bookings.
+- **RefreshToken** - User refresh JWT token information
 
 ## 🗺️ Roadmap
 
@@ -167,8 +188,15 @@ blue-bay/
 │   │   │   │   └── repositories/
 │   │   │   ├── security/                     # JWT, Auth Filter & Spring Security
 │   │   │   │   ├── config/
+│   │   │   │   ├── controllers/
+│   │   │   │   ├── dto/
+│   │   │   │   ├── entities/
+│   │   │   │   ├── exceptions/
+│   │   │   │   ├── exceptions/
 │   │   │   │   ├── filters/
-│   │   │   │   └── services/
+│   │   │   │   ├── exceptions/
+│   │   │   │   ├── services/
+│   │   │   │   └── utilities/
 │   │   │   └── users/                        # User Profiles & Account Management
 │   │   │       ├── controllers/
 │   │   │       ├── dto/                      # Request/Response Objects
