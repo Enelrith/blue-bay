@@ -60,6 +60,12 @@ public class UserService {
     private boolean userExists(Long id) {
         return userRepository.existsById(id);
     }
+
+    /**
+     * Checks if the current user's id matches the id of the user it is trying to access.
+     * @param id The id of the user the current user is trying to access
+     * @throws ForbiddenAccessException thrown when the current user's id doesn't match the id in the request
+     */
     private void isUserForbidden(Long id) {
         var currentUserId = SecurityUtil.getCurrentUserId();
         if (!id.equals(currentUserId)) throw new ForbiddenAccessException("You are not allowed to access this content");
