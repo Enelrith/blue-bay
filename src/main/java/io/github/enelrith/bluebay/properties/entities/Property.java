@@ -3,6 +3,10 @@ package io.github.enelrith.bluebay.properties.entities;
 import io.github.enelrith.bluebay.bookings.entities.Booking;
 import io.github.enelrith.bluebay.enums.PropertyType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -11,6 +15,10 @@ import java.util.Set;
  * Table "properties" in the database
  */
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "properties")
 public class Property {
     @Id
@@ -42,8 +50,11 @@ public class Property {
     @Column(name = "country", nullable = false, length = 100)
     private String country;
 
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "is_active", insertable = false, nullable = false)
     private boolean isActive;
+
+    @Column(name = "region", nullable = false, length = 100)
+    private String region;
 
     @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
     private Set<Booking> bookings;
