@@ -1,4 +1,4 @@
-package io.github.enelrith.bluebay.security;
+package io.github.enelrith.bluebay.security.repositories;
 
 import io.github.enelrith.bluebay.security.entities.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
