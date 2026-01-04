@@ -50,6 +50,16 @@ public class UserService {
     }
 
     /**
+     * Deletes a user by their id.
+     * If not an admin, a user can only delete their own information.
+     * @param id The id of the user that is to be deleted
+     */
+    public void deleteUserById(Long id) {
+        isUserForbidden(id);
+
+        userRepository.deleteById(id);
+    }
+    /**
      * Checks if a user with a specific email exists
      * @param email Email to check for
      * @return true if the user exists, false if not
