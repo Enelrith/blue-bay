@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * Repository for the bookings table
  */
-public interface BookingRepository extends JpaRepository<Booking, Integer> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
 }

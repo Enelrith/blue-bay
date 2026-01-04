@@ -122,8 +122,8 @@ public class JwtService {
      * @param token the user's JWT
      * @return the user's id as an Integer
      */
-    public Integer extractId(String token) {
-        return extractClaim(token, claims -> claims.get("id", Integer.class));
+    public Long extractId(String token) {
+        return extractClaim(token, claims -> claims.get("id", Long.class));
     }
     /**
      * Validates the token based on the user details.
