@@ -4,6 +4,7 @@ package io.github.enelrith.bluebay.users.controllers;
 import io.github.enelrith.bluebay.security.services.AuthService;
 import io.github.enelrith.bluebay.security.dto.LoginRequest;
 import io.github.enelrith.bluebay.security.dto.LoginResponse;
+import io.github.enelrith.bluebay.users.dto.GetUserResponse;
 import io.github.enelrith.bluebay.users.dto.RegisterUserRequest;
 import io.github.enelrith.bluebay.users.dto.RegisterUserResponse;
 import io.github.enelrith.bluebay.users.services.UserService;
@@ -42,5 +43,10 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetUserResponse> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 }

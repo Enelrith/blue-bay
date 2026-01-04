@@ -1,8 +1,12 @@
 package io.github.enelrith.bluebay.users.services;
 
+import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
+import io.github.enelrith.bluebay.security.utilities.SecurityUtil;
+import io.github.enelrith.bluebay.users.dto.GetUserResponse;
 import io.github.enelrith.bluebay.users.dto.RegisterUserRequest;
 import io.github.enelrith.bluebay.users.dto.RegisterUserResponse;
 import io.github.enelrith.bluebay.users.exceptions.UserAlreadyExistsException;
+import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
 import io.github.enelrith.bluebay.users.mappers.UserMapper;
 import io.github.enelrith.bluebay.users.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -37,6 +41,14 @@ public class UserService {
         return userMapper.toRegisterResponse(savedUser);
     }
 
+    public GetUserResponse getUserById(Long id) {
+        var currentUserId = SecurityUtil.getCurrentUserId();
+        if (!id.equals(currentUserId)) throw new ForbiddenAccessException("You are not allowed to access this content");
+
+        var user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return userMapper.toGetUserResponse(user);
+    }
 
     /**
      * Checks if a user with a specific email exists
@@ -45,5 +57,8 @@ public class UserService {
      */
     private boolean userExists(String email) {
         return userRepository.existsByEmail(email);
+    }
+    private boolean userExists(Long id) {
+        return userRepository.existsById(id);
     }
 }

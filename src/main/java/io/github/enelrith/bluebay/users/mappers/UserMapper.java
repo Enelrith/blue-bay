@@ -1,5 +1,6 @@
 package io.github.enelrith.bluebay.users.mappers;
 
+import io.github.enelrith.bluebay.users.dto.GetUserResponse;
 import io.github.enelrith.bluebay.users.dto.RegisterUserRequest;
 import io.github.enelrith.bluebay.users.dto.RegisterUserResponse;
 import io.github.enelrith.bluebay.users.entities.User;
@@ -16,4 +17,5 @@ public interface UserMapper {
 
     RegisterUserResponse toRegisterResponse(User user);
 
+    GetUserResponse toGetUserResponse(User user);
 }

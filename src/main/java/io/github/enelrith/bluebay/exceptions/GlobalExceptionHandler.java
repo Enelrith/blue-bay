@@ -1,10 +1,11 @@
 package io.github.enelrith.bluebay.exceptions;
 
+import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
 import io.github.enelrith.bluebay.users.exceptions.UserAlreadyExistsException;
+import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -59,5 +60,15 @@ public class GlobalExceptionHandler {
         });
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<String> handleException(UserNotFoundException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenAccessException.class)
+    public ResponseEntity<String> handleException(ForbiddenAccessException e){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }
