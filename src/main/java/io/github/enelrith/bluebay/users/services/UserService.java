@@ -10,12 +10,14 @@ import io.github.enelrith.bluebay.users.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service class for managing user-related logic.
  */
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -28,6 +30,7 @@ public class UserService {
      * @return a response object containing the registered user's details
      * @throws UserAlreadyExistsException if a user with the given email already exists
      */
+    @Transactional
     public RegisterUserResponse registerUser(RegisterUserRequest request) {
         if (userExists(request.email())) throw new UserAlreadyExistsException("User with email: "+ request.email() + " already exists");
 
@@ -52,12 +55,14 @@ public class UserService {
      * If not an admin, a user can only delete their own information.
      * @param id The id of the user that is to be deleted
      */
+    @Transactional
     public void deleteUserById(Long id) {
         isUserForbidden(id);
 
         userRepository.deleteById(id);
     }
 
+    @Transactional
     public UpdateUserEmailResponse updateUserEmailById(Long id, String email) {
         isUserForbidden(id);
 
@@ -68,6 +73,7 @@ public class UserService {
         return userMapper.toUpdateUserEmailResponse(user);
     }
 
+    @Transactional
     public UpdateUserPasswordResponse updateUserPasswordById(Long id, String password) {
         isUserForbidden(id);
 
@@ -77,6 +83,7 @@ public class UserService {
 
         return userMapper.toUpdateUserPasswordResponse(user);
     }
+
     /**
      * Checks if a user with a specific email exists
      * @param email Email to check for
