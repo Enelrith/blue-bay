@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -24,5 +23,5 @@ public record SetUserInformationRequest(@NotBlank(message = "First name cannot b
                                         @NotNull(message = "Date of birth cannot be null") @Past(message = "Invalid date of birth") LocalDateTime dateOfBirth,
                                         @NotBlank(message = "Nationality cannot be blank") String nationality,
                                         @NotNull(message = "ID document type cannot be null") UserIdDocumentType userIdDocumentType,
-                                        @NotBlank(message = "ID document number cannot be blank") String idDocumentNumber) implements Serializable {
+                                        @NotBlank(message = "ID document number cannot be blank") String idDocumentNumber) {
 }

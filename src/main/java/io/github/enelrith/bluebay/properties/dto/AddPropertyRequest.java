@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -32,8 +31,7 @@ public record AddPropertyRequest(@NotBlank(message = "ATAK  number cannot be bla
                                  @NotNull(message = "Area cannot be null")
                                  @Positive(message = "Area cannot be negative or zero")
                                  BigDecimal squareMeters,
-                                 @NotBlank(message = "Type cannot be blank")
-                                 String type,
+                                 PropertyType type,
                                  @NotBlank(message = "Street cannot be blank")
                                  @Size(message = "Street cannot be more than 100 characters long", max = 100)
                                  String street,
@@ -48,6 +46,6 @@ public record AddPropertyRequest(@NotBlank(message = "ATAK  number cannot be bla
                                  String country,
                                  @NotBlank(message = "Region cannot be blank")
                                  @Size(message = "Region cannot be more than 100 characters long", max = 100)
-                                 String region) implements Serializable
+                                 String region)
 {
 }
