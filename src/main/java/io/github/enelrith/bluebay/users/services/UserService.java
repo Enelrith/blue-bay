@@ -1,5 +1,8 @@
 package io.github.enelrith.bluebay.users.services;
 
+import io.github.enelrith.bluebay.enums.RoleNames;
+import io.github.enelrith.bluebay.roles.RoleNotFoundException;
+import io.github.enelrith.bluebay.roles.repositories.RoleRepository;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
 import io.github.enelrith.bluebay.security.utilities.SecurityUtil;
 import io.github.enelrith.bluebay.users.dto.*;
@@ -22,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     /**
      * Registers a new user in the system.
@@ -37,6 +41,10 @@ public class UserService {
         var user =  userMapper.toEntity(request);
         var encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+
+        var role = roleRepository.findByName(RoleNames.USER).orElseThrow(() -> new RoleNotFoundException("Invalid role"));
+        user.getRoles().add(role);
+
         var savedUser = userRepository.save(user);
 
         return userMapper.toRegisterResponse(savedUser);
