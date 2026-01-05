@@ -14,7 +14,11 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Handles JWT operations.
@@ -63,6 +67,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("id", user.getId())
+                .claim("roles", getUserRoles(user))
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey())
@@ -77,6 +82,10 @@ public class JwtService {
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Set<String> getUserRoles(User user) {
+        return user.getAuthorities().stream().map(role -> role.getAuthority()).collect(Collectors.toSet());
     }
 
     /**

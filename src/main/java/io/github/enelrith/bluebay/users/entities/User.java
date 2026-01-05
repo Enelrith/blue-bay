@@ -1,6 +1,7 @@
 package io.github.enelrith.bluebay.users.entities;
 
 import io.github.enelrith.bluebay.bookings.entities.Booking;
+import io.github.enelrith.bluebay.roles.entities.Role;
 import io.github.enelrith.bluebay.security.entities.RefreshToken;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -10,12 +11,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Entity representing a user in the system.
@@ -52,14 +56,20 @@ public class User implements UserDetails {
     private UserInformation userInformation;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<Booking> bookings;
+    private Set<Booking> bookings =  new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<RefreshToken> refreshTokens;
 
+    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+               joinColumns = @JoinColumn(name = "user_id"),
+               inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+    public Set<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name())).collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
