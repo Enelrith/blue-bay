@@ -23,7 +23,7 @@ import java.util.Set;
 public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "atak_number", nullable = false, length = 255)
     private String atakNumber;
@@ -51,7 +51,7 @@ public class Property {
     private String country;
 
     @Column(name = "is_active", insertable = false, nullable = false)
-    private boolean isActive;
+    private Boolean isActive;
 
     @Column(name = "region", nullable = false, length = 100)
     private String region;
