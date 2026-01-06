@@ -2,7 +2,8 @@ package io.github.enelrith.bluebay.exceptions;
 
 import io.github.enelrith.bluebay.properties.exceptions.PropertyAlreadyExistsException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
-import io.github.enelrith.bluebay.roles.RoleNotFoundException;
+import io.github.enelrith.bluebay.roles.exceptions.RoleAlreadyExistsException;
+import io.github.enelrith.bluebay.roles.exceptions.RoleNotFoundException;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
 import io.github.enelrith.bluebay.users.exceptions.UserAlreadyExistsException;
 import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
@@ -88,5 +89,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<String> handleException(RoleNotFoundException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(RoleAlreadyExistsException.class)
+    public ResponseEntity<String> handleException(RoleAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

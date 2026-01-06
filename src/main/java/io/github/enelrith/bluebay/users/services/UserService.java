@@ -1,7 +1,7 @@
 package io.github.enelrith.bluebay.users.services;
 
 import io.github.enelrith.bluebay.enums.RoleNames;
-import io.github.enelrith.bluebay.roles.RoleNotFoundException;
+import io.github.enelrith.bluebay.roles.exceptions.RoleNotFoundException;
 import io.github.enelrith.bluebay.roles.repositories.RoleRepository;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
 import io.github.enelrith.bluebay.security.utilities.SecurityUtil;
