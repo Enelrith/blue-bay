@@ -1,5 +1,6 @@
 package io.github.enelrith.bluebay.bookings.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.enelrith.bluebay.enums.BookingSource;
 import io.github.enelrith.bluebay.enums.BookingStatus;
 import io.github.enelrith.bluebay.enums.BookingPaymentType;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Table "bookings" in the database
@@ -28,19 +29,21 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "property_id", nullable = false)
     private Property property;
 
     @Column(name = "check_in", nullable = false)
-    private LocalDate checkIn;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
+    private LocalDateTime checkIn;
 
     @Column(name = "check_out", nullable = true)
-    private LocalDate checkOut;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
+    private LocalDateTime checkOut;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)

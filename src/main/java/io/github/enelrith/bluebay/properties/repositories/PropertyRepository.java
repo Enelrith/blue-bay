@@ -16,4 +16,6 @@ public interface PropertyRepository extends JpaRepository<Property, Integer> {
     Optional<Property> findByAmaNumber(String amaNumber);
 
     void deleteByAmaNumber(String amaNumber);
+
+    boolean existsByIdAndIsActiveIs(Integer id, Boolean isActive);
 }

@@ -1,6 +1,9 @@
 package io.github.enelrith.bluebay.exceptions;
 
+import io.github.enelrith.bluebay.bookings.exceptions.BookingAlreadyExistsException;
+import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyAlreadyExistsException;
+import io.github.enelrith.bluebay.properties.exceptions.PropertyIsNotActiveException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
 import io.github.enelrith.bluebay.roles.exceptions.RoleAlreadyExistsException;
 import io.github.enelrith.bluebay.roles.exceptions.RoleNotFoundException;
@@ -93,6 +96,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RoleAlreadyExistsException.class)
     public ResponseEntity<String> handleException(RoleAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<String> handleException(BookingNotFoundException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(BookingAlreadyExistsException.class)
+    public ResponseEntity<String> handleException(BookingAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(PropertyIsNotActiveException.class)
+    public ResponseEntity<String> handleException(PropertyIsNotActiveException e){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }
