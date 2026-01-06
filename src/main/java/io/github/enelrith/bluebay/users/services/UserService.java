@@ -1,6 +1,7 @@
 package io.github.enelrith.bluebay.users.services;
 
 import io.github.enelrith.bluebay.enums.RoleNames;
+import io.github.enelrith.bluebay.roles.dto.AddRoleToUserRequest;
 import io.github.enelrith.bluebay.roles.exceptions.RoleNotFoundException;
 import io.github.enelrith.bluebay.roles.repositories.RoleRepository;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
@@ -90,6 +91,16 @@ public class UserService {
         userRepository.save(user);
 
         return userMapper.toUpdateUserPasswordResponse(user);
+    }
+
+    @Transactional
+    public void addRoleToUser(Long id, AddRoleToUserRequest request) {
+        var role = roleRepository.findByName(request.name()).orElseThrow(() -> new RoleNotFoundException("Role not found"));
+        var user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        user.getRoles().add(role);
+
+        userRepository.save(user);
     }
 
     /**

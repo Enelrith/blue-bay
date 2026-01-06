@@ -1,9 +1,7 @@
 package io.github.enelrith.bluebay.roles.services;
 
-import io.github.enelrith.bluebay.enums.RoleNames;
 import io.github.enelrith.bluebay.roles.dto.AddRoleRequest;
 import io.github.enelrith.bluebay.roles.dto.GetAllRolesResponse;
-import io.github.enelrith.bluebay.roles.entities.Role;
 import io.github.enelrith.bluebay.roles.exceptions.RoleAlreadyExistsException;
 import io.github.enelrith.bluebay.roles.mappers.RoleMapper;
 import io.github.enelrith.bluebay.roles.repositories.RoleRepository;

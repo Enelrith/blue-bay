@@ -1,6 +1,7 @@
 package io.github.enelrith.bluebay.users.controllers;
 
 
+import io.github.enelrith.bluebay.roles.dto.AddRoleToUserRequest;
 import io.github.enelrith.bluebay.security.services.AuthService;
 import io.github.enelrith.bluebay.security.dto.LoginRequest;
 import io.github.enelrith.bluebay.security.dto.LoginResponse;
@@ -64,5 +65,11 @@ public class UserController {
     public ResponseEntity<UpdateUserPasswordResponse> updateUserPassword(@PathVariable Long id,
                                                                          @Valid @RequestBody UpdateUserPasswordRequest request) {
         return ResponseEntity.ok(userService.updateUserPasswordById(id, request.password()));
+    }
+
+    @PatchMapping("/{id}/roles")
+    public ResponseEntity<Void> addRoleToUser(@PathVariable Long id, @Valid @RequestBody AddRoleToUserRequest request) {
+        userService.addRoleToUser(id, request);
+        return ResponseEntity.ok().build();
     }
 }
