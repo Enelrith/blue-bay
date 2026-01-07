@@ -46,6 +46,16 @@ public record AddPropertyRequest(@NotBlank(message = "ATAK  number cannot be bla
                                  String country,
                                  @NotBlank(message = "Region cannot be blank")
                                  @Size(message = "Region cannot be more than 100 characters long", max = 100)
-                                 String region)
+                                 String region,
+                                 @NotNull(message = "Latitude cannot be null")
+                                 BigDecimal latitude,
+                                 @NotNull(message = "Longitude cannot be null")
+                                 BigDecimal longitude,
+                                 @NotNull(message = "Nightly rate cannot be null")
+                                 @Positive(message = "Nightly rate must be a positive number")
+                                 BigDecimal nightlyRate,
+                                 @NotNull(message = "Cleaning fee cannot be null")
+                                 @Positive(message = "Cleaning fee must be a positive number")
+                                 BigDecimal cleaningFee)
 {
 }

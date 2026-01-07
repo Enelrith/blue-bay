@@ -20,6 +20,12 @@ public record UpdatePropertyRequest(@Positive(message = "Area cannot be negative
                                     @Size(message = "Country cannot be more than 100 characters long", max = 100)
                                     String country,
                                     @Size(message = "Region cannot be more than 100 characters long", max = 100)
-                                    String region)
+                                    String region,
+                                    BigDecimal latitude,
+                                    BigDecimal longitude,
+                                    @Positive(message = "Nightly rate must be a positive number")
+                                    BigDecimal nightlyRate,
+                                    @Positive(message = "Cleaning fee must be a positive number")
+                                    BigDecimal cleaningFee)
 {
 }

@@ -12,5 +12,9 @@ public record GetPropertyResponse(String atakNumber,
                                   String postalCode,
                                   String country,
                                   Boolean isActive,
-                                  String region){
+                                  String region,
+                                  BigDecimal longitude,
+                                  BigDecimal latitude,
+                                  BigDecimal nightlyRate,
+                                  BigDecimal cleaningFee){
 }

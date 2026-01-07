@@ -13,5 +13,9 @@ public record AddPropertyResponse(String atakNumber,
                                   String postalCode,
                                   String country,
                                   Boolean isActive,
-                                  String region){
+                                  String region,
+                                  BigDecimal latitude,
+                                  BigDecimal longitude,
+                                  BigDecimal nightlyRate,
+                                  BigDecimal cleaningFee){
 }

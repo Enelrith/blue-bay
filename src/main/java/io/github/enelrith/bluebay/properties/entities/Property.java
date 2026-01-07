@@ -56,6 +56,18 @@ public class Property {
     @Column(name = "region", nullable = false, length = 100)
     private String region;
 
+    @Column(name = "latitude", nullable = false, precision = 8, scale = 6)
+    private BigDecimal latitude;
+
+    @Column(name = "longitude", nullable = false, precision = 9, scale = 6)
+    private BigDecimal longitude;
+
+    @Column(name = "nightly_rate", nullable = false, precision = 10, scale = 2)
+    private BigDecimal nightlyRate;
+
+    @Column(name = "cleaning_fee", nullable = false, precision = 10, scale = 2)
+    private BigDecimal cleaningFee;
+
     @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
     private Set<Booking> bookings;
 }
