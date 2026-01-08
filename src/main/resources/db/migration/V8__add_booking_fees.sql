@@ -7,7 +7,9 @@ create table booking_fees(
 );
 
 alter table bookings
+    add column taxes decimal(10, 2) not null,
     add column total_climate_fee decimal(10, 2) not null;
 
 alter table bookings
+    add constraint ck_taxes_positive check (taxes > 0),
     add constraint ck_total_climate_fee_positive check (total_climate_fee > 0)

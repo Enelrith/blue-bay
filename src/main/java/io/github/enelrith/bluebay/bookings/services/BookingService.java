@@ -1,9 +1,8 @@
 package io.github.enelrith.bluebay.bookings.services;
 
 import io.github.enelrith.bluebay.bookings.dto.AddBookingRequest;
-import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsRequest;
 import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsResponse;
-import io.github.enelrith.bluebay.bookings.exceptions.BookingAlreadyExistsException;
+import io.github.enelrith.bluebay.bookings.dto.UpdateBookingStatusRequest;
 import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
 import io.github.enelrith.bluebay.bookings.mappers.BookingMapper;
 import io.github.enelrith.bluebay.bookings.repositories.BookingRepository;
@@ -18,6 +17,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -28,6 +31,7 @@ public class BookingService {
     private final BookingMapper bookingMapper;
     private final UserRepository userRepository;
     private final PropertyRepository propertyRepository;
+    private final BookingFeeService bookingFeeService;
 
     @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public List<GetAllUserBookingsResponse> getAllUserBookings(Long  userId) {
@@ -44,29 +48,61 @@ public class BookingService {
         var user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         var property = propertyRepository.findById(propertyId).orElseThrow(() -> new PropertyNotFoundException("Property not found"));
 
-        isBookingPossible(userId, propertyId);
+        if (property.getIsActive() == false) throw new PropertyIsNotActiveException("Property is not currently available");
 
         var booking = bookingMapper.toEntity(request);
 
+        var netPayment = calculateNetPayment(propertyId, request.checkIn(), request.checkOut());
+        var totalTaxes = calculateTotalTaxes(netPayment);
+        var totalClimateFee = bookingFeeService.getTotalClimateFeeAmount(request.checkIn(),
+                request.checkOut(), property.getSquareMeters());
+        var totalPayment = calculateTotalPayment(netPayment).add(totalClimateFee);
+
         booking.setUser(user);
         booking.setProperty(property);
+        booking.setStatus(BookingStatus.CHECKED_IN);
+        booking.setNetPayment(netPayment);
+        booking.setTotalPayment(totalPayment);
+        booking.setTaxes(totalTaxes);
+        booking.setTotalClimateFee(totalClimateFee);
+
+        property.setIsActive(false);
+
+        bookingRepository.save(booking);
+        propertyRepository.save(property);
+    }
+
+    @Transactional
+    public void updateBookingStatus(Long id, UpdateBookingStatusRequest request) {
+        var booking = bookingRepository.findById(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+
+        booking.setStatus(request.status());
 
         bookingRepository.save(booking);
     }
 
-    private void isBookingPossible(Long userId, Integer propertyId) {
-        if (propertyRepository.existsByIdAndIsActiveIs(propertyId,false)) {
-            throw new PropertyIsNotActiveException("This property is not currently available");
-        }
+    private BigDecimal calculateNetPayment(Integer propertyId, LocalDateTime checkIn,
+                                           LocalDateTime checkOut) {
+        var propertyDto = propertyRepository.findCalculateNetPaymentDtoById(propertyId);
+        var daysBetween = ChronoUnit.DAYS.between(checkIn, checkOut);
+        BigDecimal days = BigDecimal.valueOf(Math.max(daysBetween, 1));
 
-        if (bookingRepository.existsByUserIdAndPropertyIdAndStatusNotIn(userId, propertyId, List.of(
-                BookingStatus.CANCELLED, BookingStatus.REFUNDED, BookingStatus.CHECKED_OUT))) {
-            throw new BookingAlreadyExistsException("This property is already booked to this customer");
-        }
+        return (propertyDto.nightlyRate().multiply(days)).add(propertyDto.cleaningFee());
+    }
 
-        if (bookingRepository.existsByPropertyIdAndStatusNotIn(propertyId,List.of(
-                BookingStatus.CANCELLED, BookingStatus.REFUNDED, BookingStatus.CHECKED_OUT))) {
-            throw new BookingAlreadyExistsException("This property is already booked to another customer");
-        }
+    private BigDecimal calculateTotalTaxes(BigDecimal netPayment) {
+        var vatTaxPercentage = bookingFeeService.getTaxAmountByType("vat_tax");
+        var municipalityTaxPercentage = bookingFeeService.getTaxAmountByType("municipality_tax");
+
+        var municipalityTax = netPayment.multiply(municipalityTaxPercentage);
+        var vatTax = netPayment.multiply(vatTaxPercentage);
+
+        return municipalityTax.add(vatTax);
+    }
+
+    private BigDecimal calculateTotalPayment(BigDecimal netPayment) {
+        var taxSum = calculateTotalTaxes(netPayment);
+
+        return netPayment.add(taxSum).setScale(2, RoundingMode.HALF_UP);
     }
 }

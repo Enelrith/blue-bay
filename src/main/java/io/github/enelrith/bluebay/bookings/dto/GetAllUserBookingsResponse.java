@@ -14,5 +14,7 @@ public record GetAllUserBookingsResponse(LocalDateTime checkIn,
                                          BigDecimal netPayment,
                                          BigDecimal totalPayment,
                                          BookingPaymentType bookingPaymentType,
-                                         BookingSource source) {
+                                         BookingSource source,
+                                         BigDecimal taxes,
+                                         BigDecimal totalClimateFee) {
 }

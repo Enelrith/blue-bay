@@ -3,6 +3,7 @@ package io.github.enelrith.bluebay.bookings.controllers;
 import io.github.enelrith.bluebay.bookings.dto.AddBookingRequest;
 import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsRequest;
 import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsResponse;
+import io.github.enelrith.bluebay.bookings.dto.UpdateBookingStatusRequest;
 import io.github.enelrith.bluebay.bookings.services.BookingService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -31,5 +32,11 @@ public class BookingController {
         bookingService.addBooking(userId, propertyId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateBookingStatus(@PathVariable Long id, @Valid @RequestBody UpdateBookingStatusRequest request) {
+        bookingService.updateBookingStatus(id, request);
+        return ResponseEntity.ok().build();
     }
 }

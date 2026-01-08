@@ -62,4 +62,10 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     @Column(name = "source", nullable = false, length = 100)
     private BookingSource source;
+
+    @Column(name = "taxes",  nullable = false, precision = 10, scale = 2)
+    private BigDecimal taxes;
+
+    @Column(name = "total_climate_fee",  nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalClimateFee;
 }
