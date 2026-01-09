@@ -32,6 +32,11 @@ public class PropertyController {
         return ResponseEntity.ok(propertyService.getAllProperties());
     }
 
+    @GetMapping("/specs")
+    public ResponseEntity<List<GetPropertyResponse>> getAllSpecs(@ModelAttribute GetPropertyBySpecificationsRequest request) {
+        return ResponseEntity.ok(propertyService.getPropertiesBySpecifications(request));
+    }
+
     @DeleteMapping("/{amaNumber}")
     public ResponseEntity<Void> deleteProperty(@PathVariable String amaNumber) {
         propertyService.deleteProperty(amaNumber);

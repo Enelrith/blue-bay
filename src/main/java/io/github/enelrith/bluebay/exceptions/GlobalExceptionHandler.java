@@ -2,10 +2,9 @@ package io.github.enelrith.bluebay.exceptions;
 
 import io.github.enelrith.bluebay.bookings.exceptions.BookingAlreadyExistsException;
 import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
+import io.github.enelrith.bluebay.bookings.exceptions.InvalidDatesException;
 import io.github.enelrith.bluebay.payment.stripe.exceptions.StripePaymentFailedException;
-import io.github.enelrith.bluebay.properties.exceptions.PropertyAlreadyExistsException;
-import io.github.enelrith.bluebay.properties.exceptions.PropertyIsNotActiveException;
-import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
+import io.github.enelrith.bluebay.properties.exceptions.*;
 import io.github.enelrith.bluebay.roles.exceptions.RoleAlreadyExistsException;
 import io.github.enelrith.bluebay.roles.exceptions.RoleNotFoundException;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
@@ -118,5 +117,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StripePaymentFailedException.class)
     public ResponseEntity<String> handleException(StripePaymentFailedException e){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidDatesException.class)
+    public ResponseEntity<String> handleException(InvalidDatesException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidAmaNumberException.class)
+    public ResponseEntity<String> handleException(InvalidAmaNumberException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPriceException.class)
+    public ResponseEntity<String> handleException(InvalidPriceException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidAreaException.class)
+    public ResponseEntity<String> handleException(InvalidAreaException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

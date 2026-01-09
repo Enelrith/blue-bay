@@ -6,7 +6,9 @@ import io.github.enelrith.bluebay.properties.exceptions.PropertyAlreadyExistsExc
 import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
 import io.github.enelrith.bluebay.properties.mappers.PropertyMapper;
 import io.github.enelrith.bluebay.properties.repositories.PropertyRepository;
+import io.github.enelrith.bluebay.properties.repositories.specifications.PropertySpec;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,21 @@ public class PropertyService {
         if (properties.isEmpty()) throw new PropertyNotFoundException("No properties found");
 
         return propertyMapper.toGetPropertyResponse(properties);
+    }
+
+    public List<GetPropertyResponse> getPropertiesBySpecifications(GetPropertyBySpecificationsRequest request) {
+        Specification<Property> spec = (root, query, cb) -> cb.conjunction();
+
+        if (request.amaNumber() != null) spec = spec.and(PropertySpec.hasAmaNumber(request.amaNumber()));
+        if (request.isActive() != null) spec = spec.and(PropertySpec.isActive(request.isActive()));
+        if (request.propertyType() != null) spec =  spec.and(PropertySpec.hasPropertyType(request.propertyType()));
+        if (request.minSquareMeters() != null) spec = spec.and(PropertySpec.hasMinArea(request.minSquareMeters()));
+        if (request.maxSquareMeters() != null) spec = spec.and(PropertySpec.hasMaxArea(request.maxSquareMeters()));
+        if (request.checkIn() != null && request.checkOut() != null) spec = spec.and(PropertySpec.isAvailable(request.checkIn(), request.checkOut()));
+        if (request.minPrice() != null) spec = spec.and(PropertySpec.hasMinPrice(request.minPrice()));
+        if (request.maxPrice() != null) spec  = spec.and(PropertySpec.hasMaxPrice(request.maxPrice()));
+
+        return propertyMapper.toGetPropertyResponse(propertyRepository.findAll(spec));
     }
 
     @Transactional
