@@ -2,6 +2,7 @@ package io.github.enelrith.bluebay.exceptions;
 
 import io.github.enelrith.bluebay.bookings.exceptions.BookingAlreadyExistsException;
 import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
+import io.github.enelrith.bluebay.payment.stripe.exceptions.StripePaymentFailedException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyAlreadyExistsException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyIsNotActiveException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
@@ -112,5 +113,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PropertyIsNotActiveException.class)
     public ResponseEntity<String> handleException(PropertyIsNotActiveException e){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(StripePaymentFailedException.class)
+    public ResponseEntity<String> handleException(StripePaymentFailedException e){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }

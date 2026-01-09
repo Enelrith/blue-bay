@@ -1,13 +1,12 @@
 package io.github.enelrith.bluebay.bookings.controllers;
 
 import io.github.enelrith.bluebay.bookings.dto.AddBookingRequest;
-import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsRequest;
 import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsResponse;
 import io.github.enelrith.bluebay.bookings.dto.UpdateBookingStatusRequest;
 import io.github.enelrith.bluebay.bookings.services.BookingService;
+import io.github.enelrith.bluebay.payment.stripe.dto.PaymentGatewayResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,13 +24,11 @@ public class BookingController {
     }
 
     @PostMapping("/{userId}/{propertyId}")
-    public ResponseEntity<Void>  addBooking(@PathVariable Long userId,
-                                            @PathVariable int propertyId,
-                                            @RequestBody @Valid AddBookingRequest request) {
+    public ResponseEntity<PaymentGatewayResponse>  addBooking(@PathVariable Long userId,
+                                                              @PathVariable int propertyId,
+                                                              @RequestBody @Valid AddBookingRequest request) {
 
-        bookingService.addBooking(userId, propertyId, request);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.ok(bookingService.addBooking(userId, propertyId, request));
     }
 
     @PatchMapping("/{id}")

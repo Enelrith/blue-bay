@@ -1,5 +1,6 @@
 package io.github.enelrith.bluebay.bookings.services;
 
+import com.stripe.exception.StripeException;
 import io.github.enelrith.bluebay.bookings.dto.AddBookingRequest;
 import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsResponse;
 import io.github.enelrith.bluebay.bookings.dto.UpdateBookingStatusRequest;
@@ -7,6 +8,9 @@ import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
 import io.github.enelrith.bluebay.bookings.mappers.BookingMapper;
 import io.github.enelrith.bluebay.bookings.repositories.BookingRepository;
 import io.github.enelrith.bluebay.enums.BookingStatus;
+import io.github.enelrith.bluebay.payment.IPaymentGateway;
+import io.github.enelrith.bluebay.payment.stripe.dto.PaymentGatewayResponse;
+import io.github.enelrith.bluebay.payment.stripe.exceptions.StripePaymentFailedException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyIsNotActiveException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
 import io.github.enelrith.bluebay.properties.repositories.PropertyRepository;
@@ -32,6 +36,7 @@ public class BookingService {
     private final UserRepository userRepository;
     private final PropertyRepository propertyRepository;
     private final BookingFeeService bookingFeeService;
+    private final IPaymentGateway paymentGateway;
 
     @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public List<GetAllUserBookingsResponse> getAllUserBookings(Long  userId) {
@@ -44,7 +49,7 @@ public class BookingService {
 
     @Transactional
     @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
-    public void addBooking(Long userId, int propertyId, AddBookingRequest request) {
+    public PaymentGatewayResponse addBooking(Long userId, int propertyId, AddBookingRequest request) {
         var user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         var property = propertyRepository.findById(propertyId).orElseThrow(() -> new PropertyNotFoundException("Property not found"));
 
@@ -56,20 +61,28 @@ public class BookingService {
         var totalTaxes = calculateTotalTaxes(netPayment);
         var totalClimateFee = bookingFeeService.getTotalClimateFeeAmount(request.checkIn(),
                 request.checkOut(), property.getSquareMeters());
-        var totalPayment = calculateTotalPayment(netPayment).add(totalClimateFee);
+        var totalPayment = calculateTotalPayment(netPayment);
 
         booking.setUser(user);
         booking.setProperty(property);
-        booking.setStatus(BookingStatus.CHECKED_IN);
         booking.setNetPayment(netPayment);
         booking.setTotalPayment(totalPayment);
         booking.setTaxes(totalTaxes);
         booking.setTotalClimateFee(totalClimateFee);
-
-        property.setIsActive(false);
+        booking.setStatus(BookingStatus.PENDING);
 
         bookingRepository.save(booking);
         propertyRepository.save(property);
+
+        PaymentGatewayResponse paymentResponse = null;
+        try {
+            paymentResponse = paymentGateway.createCheckoutSession(booking);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new StripePaymentFailedException("Error creating checkout session");
+        }
+
+        return paymentResponse;
     }
 
     @Transactional

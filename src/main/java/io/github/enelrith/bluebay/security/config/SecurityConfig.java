@@ -74,6 +74,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/properties/**").authenticated()
                         .requestMatchers("/properties/**").hasRole("ADMIN")
                         .requestMatchers("/roles/**").hasRole("ADMIN")
+                        .requestMatchers("/checkout-success").permitAll()
+                        .requestMatchers("/checkout-failed").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/checkout/webhook").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

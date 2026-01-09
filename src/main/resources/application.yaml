@@ -14,3 +14,8 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     show-sql: true
+stripe:
+  publicKey: ${STRIPE_PUBLIC_KEY}
+  secretKey: ${STRIPE_SECRET_KEY}
+  webhookSecretKey: ${STRIPE_WEBHOOK_KEY}
+websiteUrl: ${WEBSITE_URL}
