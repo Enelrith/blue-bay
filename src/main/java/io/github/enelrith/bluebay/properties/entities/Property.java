@@ -70,4 +70,7 @@ public class Property {
 
     @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
     private Set<Booking> bookings;
+
+    @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
+    private Set<PropertyAmenity> propertyAmenities;
 }

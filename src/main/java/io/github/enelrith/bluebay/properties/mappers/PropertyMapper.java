@@ -2,8 +2,8 @@ package io.github.enelrith.bluebay.properties.mappers;
 
 import io.github.enelrith.bluebay.properties.dto.*;
 import io.github.enelrith.bluebay.properties.entities.Property;
+import io.github.enelrith.bluebay.properties.entities.PropertyAmenity;
 import org.mapstruct.*;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -28,4 +28,12 @@ public interface PropertyMapper {
     Property toEntity(UpdatePropertyRequest request);
 
     UpdatePropertyResponse  toUpdatePropertyResponse(Property property);
+
+    @Mapping(source = "property.id", target = "propertyId")
+    @Mapping(source = "amenity.id", target = "amenityId")
+    AddPropertyAmenityResponse toAddPropertyAmenityResponse(PropertyAmenity propertyAmenity);
+
+    @Mapping(source = "property.id", target = "propertyId")
+    @Mapping(source = "amenity.id", target = "amenityId")
+    UpdatePropertyAmenityQuantityResponse toUpdatePropertyAmenityQuantityResponse(PropertyAmenity propertyAmenity);
 }

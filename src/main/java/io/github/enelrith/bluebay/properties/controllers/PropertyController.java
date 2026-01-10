@@ -49,4 +49,23 @@ public class PropertyController {
 
         return ResponseEntity.ok(propertyService.updateProperty(amaNumber, request));
     }
+
+    @PostMapping("/{propertyId}/amenities/{amenityId}")
+    public ResponseEntity<AddPropertyAmenityResponse> addAmenityToProperty(@PathVariable Integer propertyId,
+                                                                           @PathVariable Integer amenityId,
+                                                                           @Valid @RequestBody AddPropertyAmenityRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(propertyService.addAmenityToProduct(propertyId, amenityId, request));
+    }
+
+    @PutMapping("/amenities/{id}")
+    public ResponseEntity<UpdatePropertyAmenityQuantityResponse> updateAmenityQuantity(@PathVariable Integer id,
+                                                                                       @RequestBody UpdatePropertyAmenityQuantityRequest request) {
+        return ResponseEntity.ok(propertyService.updateAmenityQuantity(id, request));
+    }
+
+    @DeleteMapping("/amenities/{id}")
+    public ResponseEntity<Void> deletePropertyAmenity(@PathVariable Integer id) {
+        propertyService.deletePropertyAmenity(id);
+        return ResponseEntity.noContent().build();
+    }
 }

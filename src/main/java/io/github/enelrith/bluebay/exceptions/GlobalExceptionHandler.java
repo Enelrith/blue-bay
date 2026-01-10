@@ -1,5 +1,7 @@
 package io.github.enelrith.bluebay.exceptions;
 
+import io.github.enelrith.bluebay.amenities.exceptions.AmenityAlreadyExistsException;
+import io.github.enelrith.bluebay.amenities.exceptions.AmenityNotFoundException;
 import io.github.enelrith.bluebay.bookings.exceptions.BookingAlreadyExistsException;
 import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
 import io.github.enelrith.bluebay.bookings.exceptions.InvalidDatesException;
@@ -136,6 +138,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidAreaException.class)
     public ResponseEntity<String> handleException(InvalidAreaException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AmenityAlreadyExistsException.class)
+    public ResponseEntity<String> handleException(AmenityAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AmenityNotFoundException.class)
+    public ResponseEntity<String> handleException(AmenityNotFoundException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

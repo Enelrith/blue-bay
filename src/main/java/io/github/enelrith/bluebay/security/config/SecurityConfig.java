@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/roles/**").hasRole("ADMIN")
                         .requestMatchers("/checkout-success").permitAll()
                         .requestMatchers("/checkout-failed").permitAll()
+                        .requestMatchers("/amenities/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/checkout/webhook").permitAll()
                         .anyRequest().authenticated()
                 )
