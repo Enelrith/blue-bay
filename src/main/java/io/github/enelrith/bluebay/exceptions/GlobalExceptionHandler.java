@@ -10,8 +10,7 @@ import io.github.enelrith.bluebay.properties.exceptions.*;
 import io.github.enelrith.bluebay.roles.exceptions.RoleAlreadyExistsException;
 import io.github.enelrith.bluebay.roles.exceptions.RoleNotFoundException;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
-import io.github.enelrith.bluebay.users.exceptions.UserAlreadyExistsException;
-import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
+import io.github.enelrith.bluebay.users.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -149,5 +148,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AmenityNotFoundException.class)
     public ResponseEntity<String> handleException(AmenityNotFoundException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NotAnAdultException.class)
+    public ResponseEntity<String> handleException(NotAnAdultException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidIdDocumentTypeException.class)
+    public ResponseEntity<String> handleException(InvalidIdDocumentTypeException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(UserInformationAlreadyExistsException.class)
+    public ResponseEntity<String> handleException(UserInformationAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

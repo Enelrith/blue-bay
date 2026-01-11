@@ -5,5 +5,13 @@ package io.github.enelrith.bluebay.enums;
  */
 public enum UserIdDocumentType {
     NATIONAL_ID,
-    PASSPORT
+    PASSPORT;
+
+    public static boolean isValid(String value) {
+        for (UserIdDocumentType type : UserIdDocumentType.values()) {
+            if (type.toString().equals(value))
+                return true;
+        }
+        return false;
+    }
 }
