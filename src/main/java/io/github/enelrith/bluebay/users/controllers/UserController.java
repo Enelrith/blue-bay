@@ -72,4 +72,10 @@ public class UserController {
         userService.addRoleToUser(id, request);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/user-information/{id}")
+    public ResponseEntity<AddUserInformationResponse> addUserInformation(@PathVariable Long id,
+                                                                         @Valid @RequestBody AddUserInformationRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUserInformation(id, request));
+    }
 }

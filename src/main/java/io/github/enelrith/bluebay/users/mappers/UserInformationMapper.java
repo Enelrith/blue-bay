@@ -1,6 +1,7 @@
 package io.github.enelrith.bluebay.users.mappers;
 
-import io.github.enelrith.bluebay.users.dto.SetUserInformationRequest;
+import io.github.enelrith.bluebay.users.dto.AddUserInformationRequest;
+import io.github.enelrith.bluebay.users.dto.AddUserInformationResponse;
 import io.github.enelrith.bluebay.users.entities.UserInformation;
 import org.mapstruct.*;
 
@@ -9,10 +10,13 @@ import org.mapstruct.*;
  */
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserInformationMapper {
-    UserInformation toEntity(SetUserInformationRequest setUserInformationRequest);
+    UserInformation toEntity(AddUserInformationRequest addUserInformationRequest);
 
-    SetUserInformationRequest toDto(UserInformation userInformation);
+    AddUserInformationRequest toDto(UserInformation userInformation);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    UserInformation partialUpdate(SetUserInformationRequest setUserInformationRequest, @MappingTarget UserInformation userInformation);
+    UserInformation partialUpdate(AddUserInformationRequest setUserInformationRequest, @MappingTarget UserInformation userInformation);
+
+    AddUserInformationResponse toAddUserInformationResponse(UserInformation userInformation);
+
 }
