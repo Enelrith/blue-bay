@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - Blue Bay</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🏖️ Blue Bay</a>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/properties-ui">Properties</a>
+                <a href="/bookings-ui">Bookings</a>
+                <a href="/users-ui">Users</a>
+                <a href="/amenities-ui">Amenities</a>
+            </nav>
+            <div class="auth-status" id="authStatus"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>User Management</h1>
+
+        <!-- Get User Info -->
+        <div class="card">
+            <h2>👤 View User Information</h2>
+            <form id="getUserForm" onsubmit="handleGetUser(event)">
+                <div class="form-group">
+                    <label for="getUserId">User ID *</label>
+                    <input type="number" id="getUserId" required>
+                    <small style="color: var(--text-light); font-size: 0.75rem;">
+                        You can only view your own information unless you're an admin
+                    </small>
+                </div>
+                <button type="submit" class="btn btn-primary">Get User</button>
+            </form>
+        </div>
+
+        <!-- Update Email -->
+        <div class="card">
+            <h2>✉️ Update Email</h2>
+            <form id="updateEmailForm" onsubmit="handleUpdateEmail(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="emailUserId">User ID *</label>
+                        <input type="number" id="emailUserId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmail">New Email *</label>
+                        <input type="email" id="newEmail" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Update Email</button>
+            </form>
+        </div>
+
+        <!-- Update Password -->
+        <div class="card">
+            <h2>🔒 Update Password</h2>
+            <form id="updatePasswordForm" onsubmit="handleUpdatePassword(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="passwordUserId">User ID *</label>
+                        <input type="number" id="passwordUserId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password *</label>
+                        <input type="password" id="newPassword" minlength="6" maxlength="72" required>
+                        <small style="color: var(--text-light); font-size: 0.75rem;">
+                            6-72 characters
+                        </small>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Update Password</button>
+            </form>
+        </div>
+
+        <!-- Add Role (Admin Only) -->
+        <div class="card">
+            <h2>👑 Add Role to User (Admin Only)</h2>
+            <form id="addRoleForm" onsubmit="handleAddRole(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="roleUserId">User ID *</label>
+                        <input type="number" id="roleUserId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="roleName">Role *</label>
+                        <select id="roleName" required>
+                            <option value="USER">USER</option>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="MODERATOR">MODERATOR</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Add Role</button>
+            </form>
+        </div>
+
+        <!-- Delete User -->
+        <div class="card">
+            <h2>🗑️ Delete User Account</h2>
+            <form id="deleteUserForm" onsubmit="handleDeleteUser(event)">
+                <div class="form-group">
+                    <label for="deleteUserId">User ID *</label>
+                    <input type="number" id="deleteUserId" required>
+                    <small style="color: var(--danger); font-size: 0.75rem;">
+                        ⚠️ This action cannot be undone!
+                    </small>
+                </div>
+                <button type="submit" class="btn btn-danger">Delete User</button>
+            </form>
+        </div>
+
+        <!-- Response Display -->
+        <div id="responseContainer"></div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        async function handleGetUser(event) {
+            event.preventDefault();
+            
+            const userId = parseInt(document.getElementById('getUserId').value);
+            
+            try {
+                const user = await API.getUser(userId);
+                UI.showSuccess('User information retrieved');
+                displayResponse({
+                    message: 'User found',
+                    user: user
+                });
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleUpdateEmail(event) {
+            event.preventDefault();
+            
+            const userId = parseInt(document.getElementById('emailUserId').value);
+            const email = document.getElementById('newEmail').value;
+            
+            try {
+                const response = await API.updateUserEmail(userId, email);
+                UI.showSuccess('Email updated successfully!');
+                displayResponse(response);
+                document.getElementById('updateEmailForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleUpdatePassword(event) {
+            event.preventDefault();
+            
+            const userId = parseInt(document.getElementById('passwordUserId').value);
+            const password = document.getElementById('newPassword').value;
+            
+            if (!confirm('Are you sure you want to update the password?')) return;
+            
+            try {
+                const response = await API.updateUserPassword(userId, password);
+                UI.showSuccess('Password updated successfully!');
+                displayResponse({
+                    message: 'Password updated',
+                    passwordHash: response.password
+                });
+                document.getElementById('updatePasswordForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleAddRole(event) {
+            event.preventDefault();
+            
+            const userId = parseInt(document.getElementById('roleUserId').value);
+            const roleName = document.getElementById('roleName').value;
+            
+            try {
+                await API.request(`/users/${userId}/roles`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ name: roleName })
+                });
+                UI.showSuccess(`Role ${roleName} added to user ${userId}`);
+                displayResponse({
+                    message: 'Role added successfully',
+                    userId: userId,
+                    role: roleName
+                });
+                document.getElementById('addRoleForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleDeleteUser(event) {
+            event.preventDefault();
+            
+            const userId = parseInt(document.getElementById('deleteUserId').value);
+            
+            if (!confirm(`⚠️ Are you ABSOLUTELY SURE you want to delete user ${userId}?\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+            
+            try {
+                await API.deleteUser(userId);
+                UI.showSuccess('User deleted successfully');
+                displayResponse({
+                    message: 'User deleted',
+                    userId: userId
+                });
+                document.getElementById('deleteUserForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        function displayResponse(data, isError = false) {
+            const container = document.getElementById('responseContainer');
+            container.innerHTML = `
+                <div class="card">
+                    <h2>${isError ? '❌ Error Response' : '✅ Success Response'}</h2>
+                    <div class="json-display">${UI.formatJSON(data)}</div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            UI.requireAuth();
+        });
+    </script>
+</body>
+</html>

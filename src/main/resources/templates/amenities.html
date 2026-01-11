@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amenities - Blue Bay</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🏖️ Blue Bay</a>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/properties-ui">Properties</a>
+                <a href="/bookings-ui">Bookings</a>
+                <a href="/users-ui">Users</a>
+                <a href="/amenities-ui">Amenities</a>
+            </nav>
+            <div class="auth-status" id="authStatus"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Amenity Management</h1>
+        
+        <div class="alert alert-info">
+            ℹ️ Note: All amenity operations require ADMIN role
+        </div>
+
+        <!-- Add Amenity -->
+        <div class="card">
+            <h2>➕ Add New Amenity</h2>
+            <form id="addAmenityForm" onsubmit="handleAddAmenity(event)">
+                <div class="form-group">
+                    <label for="amenityName">Amenity Name *</label>
+                    <input type="text" id="amenityName" maxlength="100" required 
+                           placeholder="e.g., WiFi, Air Conditioning, Parking">
+                </div>
+                <button type="submit" class="btn btn-success">Add Amenity</button>
+            </form>
+        </div>
+
+        <!-- Add Amenity to Property -->
+        <div class="card">
+            <h2>🏠 Add Amenity to Property</h2>
+            <form id="addPropertyAmenityForm" onsubmit="handleAddPropertyAmenity(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="propertyIdForAmenity">Property ID *</label>
+                        <input type="number" id="propertyIdForAmenity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amenityIdForProperty">Amenity ID *</label>
+                        <input type="number" id="amenityIdForProperty" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amenityQuantity">Quantity</label>
+                        <input type="number" id="amenityQuantity" min="1" max="99" value="1">
+                        <small style="color: var(--text-light); font-size: 0.75rem;">
+                            Optional: Number of this amenity (1-99)
+                        </small>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Add to Property</button>
+            </form>
+        </div>
+
+        <!-- Update Property Amenity Quantity -->
+        <div class="card">
+            <h2>🔢 Update Property Amenity Quantity</h2>
+            <form id="updateQuantityForm" onsubmit="handleUpdateQuantity(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="propertyAmenityId">Property Amenity ID *</label>
+                        <input type="number" id="propertyAmenityId" required>
+                        <small style="color: var(--text-light); font-size: 0.75rem;">
+                            This is the ID from the property_amenities table
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="newQuantity">New Quantity *</label>
+                        <input type="number" id="newQuantity" min="1" max="99" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Quantity</button>
+            </form>
+        </div>
+
+        <!-- Delete Property Amenity -->
+        <div class="card">
+            <h2>🗑️ Remove Amenity from Property</h2>
+            <form id="deletePropertyAmenityForm" onsubmit="handleDeletePropertyAmenity(event)">
+                <div class="form-group">
+                    <label for="deletePropertyAmenityId">Property Amenity ID *</label>
+                    <input type="number" id="deletePropertyAmenityId" required>
+                    <small style="color: var(--danger); font-size: 0.75rem;">
+                        ⚠️ This will remove the amenity from the property
+                    </small>
+                </div>
+                <button type="submit" class="btn btn-danger">Remove from Property</button>
+            </form>
+        </div>
+
+        <!-- Get All Roles -->
+        <div class="card">
+            <h2>👑 View All Roles</h2>
+            <button onclick="handleGetRoles()" class="btn btn-primary">Load Roles</button>
+            <div id="rolesList" style="margin-top: 1rem;"></div>
+        </div>
+
+        <!-- Add Role -->
+        <div class="card">
+            <h2>➕ Add New Role</h2>
+            <form id="addRoleForm" onsubmit="handleAddRole(event)">
+                <div class="form-group">
+                    <label for="roleName">Role Name *</label>
+                    <select id="roleName" required>
+                        <option value="">Select a role</option>
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="MODERATOR">MODERATOR</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Add Role</button>
+            </form>
+        </div>
+
+        <!-- Response Display -->
+        <div id="responseContainer"></div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        async function handleAddAmenity(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('amenityName').value;
+            
+            try {
+                await API.addAmenity(name);
+                UI.showSuccess('Amenity added successfully!');
+                displayResponse({ message: 'Amenity added', name: name });
+                document.getElementById('addAmenityForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleAddPropertyAmenity(event) {
+            event.preventDefault();
+            
+            const propertyId = parseInt(document.getElementById('propertyIdForAmenity').value);
+            const amenityId = parseInt(document.getElementById('amenityIdForProperty').value);
+            const quantity = parseInt(document.getElementById('amenityQuantity').value);
+            
+            try {
+                const response = await API.addPropertyAmenity(propertyId, amenityId, quantity);
+                UI.showSuccess('Amenity added to property successfully!');
+                displayResponse(response);
+                document.getElementById('addPropertyAmenityForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleUpdateQuantity(event) {
+            event.preventDefault();
+            
+            const id = parseInt(document.getElementById('propertyAmenityId').value);
+            const quantity = parseInt(document.getElementById('newQuantity').value);
+            
+            try {
+                const response = await API.request(`/properties/amenities/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ quantity })
+                });
+                UI.showSuccess('Quantity updated successfully!');
+                displayResponse(response);
+                document.getElementById('updateQuantityForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleDeletePropertyAmenity(event) {
+            event.preventDefault();
+            
+            const id = parseInt(document.getElementById('deletePropertyAmenityId').value);
+            
+            if (!confirm(`Remove amenity ${id} from property?`)) return;
+            
+            try {
+                await API.request(`/properties/amenities/${id}`, {
+                    method: 'DELETE'
+                });
+                UI.showSuccess('Amenity removed from property');
+                displayResponse({ message: 'Amenity removed', id: id });
+                document.getElementById('deletePropertyAmenityForm').reset();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleGetRoles() {
+            try {
+                const roles = await API.getRoles();
+                const container = document.getElementById('rolesList');
+                
+                if (roles && roles.length > 0) {
+                    container.innerHTML = `
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Role Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${roles.map(r => `
+                                        <tr>
+                                            <td><strong>${r.name}</strong></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '<div class="empty-state">No roles found</div>';
+                }
+                
+                UI.showSuccess('Roles loaded successfully');
+            } catch (error) {
+                UI.showError(error);
+                document.getElementById('rolesList').innerHTML = 
+                    `<div class="alert alert-error">Failed to load roles: ${error.message}</div>`;
+            }
+        }
+
+        async function handleAddRole(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('roleName').value;
+            
+            try {
+                await API.addRole(name);
+                UI.showSuccess('Role added successfully!');
+                displayResponse({ message: 'Role added', name: name });
+                document.getElementById('addRoleForm').reset();
+                
+                // Refresh roles list
+                await handleGetRoles();
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        function displayResponse(data, isError = false) {
+            const container = document.getElementById('responseContainer');
+            container.innerHTML = `
+                <div class="card">
+                    <h2>${isError ? '❌ Error Response' : '✅ Success Response'}</h2>
+                    <div class="json-display">${UI.formatJSON(data)}</div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            UI.requireAuth();
+        });
+    </script>
+</body>
+</html>

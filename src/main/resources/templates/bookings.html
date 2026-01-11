@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings - Blue Bay</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🏖️ Blue Bay</a>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/properties-ui">Properties</a>
+                <a href="/bookings-ui">Bookings</a>
+                <a href="/users-ui">Users</a>
+                <a href="/amenities-ui">Amenities</a>
+            </nav>
+            <div class="auth-status" id="authStatus"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Booking Management</h1>
+
+        <!-- Create Booking -->
+        <div class="card">
+            <h2>➕ Create New Booking</h2>
+            <form id="createBookingForm" onsubmit="handleCreateBooking(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="userId">User ID *</label>
+                        <input type="number" id="userId" required>
+                        <small style="color: var(--text-light); font-size: 0.75rem;">
+                            Enter the user ID for this booking
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="propertyId">Property ID *</label>
+                        <input type="number" id="propertyId" required>
+                        <small style="color: var(--text-light); font-size: 0.75rem;">
+                            Enter the property ID to book
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkIn">Check In *</label>
+                        <input type="datetime-local" id="checkIn" required>
+                        <small style="color: var(--text-light); font-size: 0.75rem;">
+                            Format: DD-MM-YYYY HH:mm
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkOut">Check Out *</label>
+                        <input type="datetime-local" id="checkOut" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentType">Payment Type *</label>
+                        <select id="paymentType" required>
+                            <option value="CREDIT_CARD">Credit Card</option>
+                            <option value="DEBIT_CARD">Debit Card</option>
+                            <option value="CASH">Cash</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="source">Booking Source *</label>
+                        <select id="source" required>
+                            <option value="WALK_IN">Walk In</option>
+                            <option value="PHONE">Phone</option>
+                            <option value="BLUE_BAY_WEBSITE">Blue Bay Website</option>
+                            <option value="AIRBNB_WEBSITE">Airbnb</option>
+                            <option value="BOOKING_COM_WEBSITE">Booking.com</option>
+                            <option value="THIRD_PARTY_WEBSITE">Third Party</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Create Booking</button>
+            </form>
+        </div>
+
+        <!-- View User Bookings -->
+        <div class="card">
+            <h2>🔍 View User Bookings</h2>
+            <form id="viewBookingsForm" onsubmit="handleViewBookings(event)">
+                <div class="form-group">
+                    <label for="viewUserId">User ID *</label>
+                    <input type="number" id="viewUserId" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Load Bookings</button>
+            </form>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="card">
+            <h2>📋 Bookings</h2>
+            <div id="bookingsList" class="empty-state">
+                Enter a User ID above to view bookings
+            </div>
+        </div>
+
+        <!-- Response Display -->
+        <div id="responseContainer"></div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        function formatDateForAPI(dateString) {
+            // Convert from datetime-local format to DD-MM-YYYY HH:mm
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
+        }
+
+        async function handleCreateBooking(event) {
+            event.preventDefault();
+            
+            const userId = parseInt(document.getElementById('userId').value);
+            const propertyId = parseInt(document.getElementById('propertyId').value);
+            
+            const checkInRaw = document.getElementById('checkIn').value;
+            const checkOutRaw = document.getElementById('checkOut').value;
+            
+            const data = {
+                checkIn: formatDateForAPI(checkInRaw),
+                checkOut: formatDateForAPI(checkOutRaw),
+                bookingPaymentType: document.getElementById('paymentType').value,
+                source: document.getElementById('source').value
+            };
+            
+            try {
+                const response = await API.createBooking(userId, propertyId, data);
+                UI.showSuccess('Booking created successfully!');
+                displayResponse(response);
+                document.getElementById('createBookingForm').reset();
+                
+                // If it's for the current user, refresh their bookings
+                document.getElementById('viewUserId').value = userId;
+                await handleViewBookings(new Event('submit'));
+            } catch (error) {
+                UI.showError(error);
+                displayResponse(error, true);
+            }
+        }
+
+        async function handleViewBookings(event) {
+            event.preventDefault();
+            
+            const userId = parseInt(document.getElementById('viewUserId').value);
+            
+            try {
+                const bookings = await API.getBookings(userId);
+                displayBookings(bookings);
+                UI.showSuccess(`Loaded ${bookings.length} bookings`);
+            } catch (error) {
+                UI.showError(error);
+                document.getElementById('bookingsList').innerHTML = 
+                    `<div class="empty-state">Failed to load bookings: ${error.message}</div>`;
+            }
+        }
+
+        async function updateBookingStatus(bookingId, currentStatus) {
+            const statuses = ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT', 'CANCELLED', 'REFUNDED', 'FAILED'];
+            const newStatus = prompt(`Enter new status for booking ${bookingId}:\n\nAvailable statuses:\n${statuses.join('\n')}\n\nCurrent: ${currentStatus}`, currentStatus);
+            
+            if (!newStatus || newStatus === currentStatus) return;
+            
+            if (!statuses.includes(newStatus)) {
+                UI.showError('Invalid status');
+                return;
+            }
+            
+            try {
+                await API.updateBookingStatus(bookingId, newStatus);
+                UI.showSuccess('Booking status updated');
+                // Reload bookings
+                const userId = document.getElementById('viewUserId').value;
+                if (userId) {
+                    const bookings = await API.getBookings(parseInt(userId));
+                    displayBookings(bookings);
+                }
+            } catch (error) {
+                UI.showError(error);
+            }
+        }
+
+        function displayBookings(bookings) {
+            const container = document.getElementById('bookingsList');
+            
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = '<div class="empty-state">No bookings found for this user</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Status</th>
+                                <th>Net Payment</th>
+                                <th>Taxes</th>
+                                <th>Climate Fee</th>
+                                <th>Total</th>
+                                <th>Payment Type</th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${bookings.map((b, idx) => `
+                                <tr>
+                                    <td>${UI.formatDate(b.checkIn)}</td>
+                                    <td>${UI.formatDate(b.checkOut)}</td>
+                                    <td>
+                                        <span style="cursor: pointer; text-decoration: underline;" 
+                                              onclick="updateBookingStatus(${idx}, '${b.status}')">
+                                            ${b.status}
+                                        </span>
+                                    </td>
+                                    <td>${UI.formatCurrency(b.netPayment)}</td>
+                                    <td>${UI.formatCurrency(b.taxes)}</td>
+                                    <td>${UI.formatCurrency(b.totalClimateFee)}</td>
+                                    <td><strong>${UI.formatCurrency(b.totalPayment)}</strong></td>
+                                    <td>${b.bookingPaymentType}</td>
+                                    <td>${b.source}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-light);">
+                    💡 Click on a status to update it
+                </div>
+            `;
+        }
+
+        function displayResponse(data, isError = false) {
+            const container = document.getElementById('responseContainer');
+            container.innerHTML = `
+                <div class="card">
+                    <h2>${isError ? '❌ Error Response' : '✅ Success Response'}</h2>
+                    <div class="json-display">${UI.formatJSON(data)}</div>
+                    ${!isError && data.checkoutUrl ? `
+                        <div style="margin-top: 1rem;">
+                            <a href="${data.checkoutUrl}" target="_blank" class="btn btn-primary">
+                                Open Stripe Checkout
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            UI.requireAuth();
+        });
+    </script>
+</body>
+</html>

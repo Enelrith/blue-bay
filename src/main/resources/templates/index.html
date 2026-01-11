@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Bay - API Testing Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🏖️ Blue Bay</a>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/properties-ui">Properties</a>
+                <a href="/bookings-ui">Bookings</a>
+                <a href="/users-ui">Users</a>
+                <a href="/amenities-ui">Amenities</a>
+            </nav>
+            <div class="auth-status" id="authStatus"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome to Blue Bay API Testing Dashboard</h1>
+        
+        <div class="grid grid-2">
+            <div class="card">
+                <h2>📋 Properties</h2>
+                <p>Manage short-term rental properties. Add, view, update, and delete property listings.</p>
+                <a href="/properties-ui" class="btn btn-primary mt-2">Go to Properties</a>
+            </div>
+
+            <div class="card">
+                <h2>📅 Bookings</h2>
+                <p>View and manage bookings. Create new reservations and update booking statuses.</p>
+                <a href="/bookings-ui" class="btn btn-primary mt-2">Go to Bookings</a>
+            </div>
+
+            <div class="card">
+                <h2>👥 Users</h2>
+                <p>Manage user accounts. View user information and update account details.</p>
+                <a href="/users-ui" class="btn btn-primary mt-2">Go to Users</a>
+            </div>
+
+            <div class="card">
+                <h2>✨ Amenities</h2>
+                <p>Manage property amenities. Add amenities and assign them to properties.</p>
+                <a href="/amenities-ui" class="btn btn-primary mt-2">Go to Amenities</a>
+            </div>
+        </div>
+
+        <div class="card mt-2">
+            <h2>🔑 Authentication Status</h2>
+            <div id="authInfo"></div>
+        </div>
+
+        <div class="card">
+            <h2>📚 Quick Guide</h2>
+            <ol>
+                <li><strong>Register/Login:</strong> Go to <a href="/auth">Authentication</a> page to create an account or login</li>
+                <li><strong>Properties:</strong> Browse and manage property listings</li>
+                <li><strong>Bookings:</strong> Create and manage reservations</li>
+                <li><strong>Test APIs:</strong> Use the forms to test different API endpoints</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        function displayAuthInfo() {
+            const authInfo = document.getElementById('authInfo');
+            
+            if (API.isAuthenticated()) {
+                const email = API.getUserEmail();
+                const token = API.getToken();
+                const preview = token ? token.substring(0, 50) + '...' : 'None';
+                
+                authInfo.innerHTML = `
+                    <p><strong>Status:</strong> ✅ Authenticated</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Token:</strong> <code style="font-size: 0.75rem;">${preview}</code></p>
+                    <button onclick="API.logout()" class="btn btn-danger btn-small mt-1">Logout</button>
+                `;
+            } else {
+                authInfo.innerHTML = `
+                    <p><strong>Status:</strong> ❌ Not authenticated</p>
+                    <p>Please <a href="/auth">login or register</a> to access protected endpoints.</p>
+                `;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', displayAuthInfo);
+    </script>
+</body>
+</html>

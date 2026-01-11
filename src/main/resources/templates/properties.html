@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Properties - Blue Bay</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🏖️ Blue Bay</a>
+            <nav class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/properties-ui">Properties</a>
+                <a href="/bookings-ui">Bookings</a>
+                <a href="/users-ui">Users</a>
+                <a href="/amenities-ui">Amenities</a>
+            </nav>
+            <div class="auth-status" id="authStatus"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Property Management</h1>
+
+        <!-- Search Properties -->
+        <div class="card">
+            <h2>🔍 Search Properties</h2>
+            <form id="searchForm" onsubmit="handleSearch(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="searchAma">AMA Number (partial)</label>
+                        <input type="text" id="searchAma">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchType">Property Type</label>
+                        <select id="searchType">
+                            <option value="">All Types</option>
+                            <option value="STUDIO">Studio</option>
+                            <option value="SINGLE_BEDROOM">Single Bedroom</option>
+                            <option value="DOUBLE_BEDROOM">Double Bedroom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="searchMinArea">Min Area (m²)</label>
+                        <input type="number" id="searchMinArea" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchMaxArea">Max Area (m²)</label>
+                        <input type="number" id="searchMaxArea" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchMinPrice">Min Nightly Rate (€)</label>
+                        <input type="number" id="searchMinPrice" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchMaxPrice">Max Nightly Rate (€)</label>
+                        <input type="number" id="searchMaxPrice" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="searchActive" checked>
+                        Active properties only
+                    </label>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="button" onclick="loadAllProperties()" class="btn btn-success">Load All</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Add Property (Admin Only) -->
+        <div class="card">
+            <h2>➕ Add Property (Admin)</h2>
+            <form id="addPropertyForm" onsubmit="handleAddProperty(event)">
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="atakNumber">ATAK Number *</label>
+                        <input type="text" id="atakNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amaNumber">AMA Number *</label>
+                        <input type="text" id="amaNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="squareMeters">Area (m²) *</label>
+                        <input type="number" id="squareMeters" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Type *</label>
+                        <select id="type" required>
+                            <option value="STUDIO">Studio</option>
+                            <option value="SINGLE_BEDROOM">Single Bedroom</option>
+                            <option value="DOUBLE_BEDROOM">Double Bedroom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="street">Street *</label>
+                        <input type="text" id="street" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postalCode">Postal Code *</label>
+                        <input type="text" id="postalCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country *</label>
+                        <input type="text" id="country" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="region">Region *</label>
+                        <input type="text" id="region" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="latitude">Latitude *</label>
+                        <input type="number" id="latitude" step="0.000001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">Longitude *</label>
+                        <input type="number" id="longitude" step="0.000001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nightlyRate">Nightly Rate (€) *</label>
+                        <input type="number" id="nightlyRate" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cleaningFee">Cleaning Fee (€) *</label>
+                        <input type="number" id="cleaningFee" step="0.01" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Add Property</button>
+            </form>
+        </div>
+
+        <!-- Properties List -->
+        <div class="card">
+            <h2>📋 Properties</h2>
+            <div id="propertiesList" class="loading">Loading properties...</div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        async function loadAllProperties() {
+            try {
+                const properties = await API.getProperties();
+                displayProperties(properties);
+                UI.showSuccess('Properties loaded successfully');
+            } catch (error) {
+                UI.showError(error);
+                document.getElementById('propertiesList').innerHTML = 
+                    `<div class="empty-state">Failed to load properties: ${error.message}</div>`;
+            }
+        }
+
+        async function handleSearch(event) {
+            event.preventDefault();
+            
+            const params = {};
+            
+            const ama = document.getElementById('searchAma').value;
+            if (ama) params.amaNumber = ama;
+            
+            const type = document.getElementById('searchType').value;
+            if (type) params.propertyType = type;
+            
+            const minArea = document.getElementById('searchMinArea').value;
+            if (minArea) params.minSquareMeters = minArea;
+            
+            const maxArea = document.getElementById('searchMaxArea').value;
+            if (maxArea) params.maxSquareMeters = maxArea;
+            
+            const minPrice = document.getElementById('searchMinPrice').value;
+            if (minPrice) params.minPrice = minPrice;
+            
+            const maxPrice = document.getElementById('searchMaxPrice').value;
+            if (maxPrice) params.maxPrice = maxPrice;
+            
+            const activeOnly = document.getElementById('searchActive').checked;
+            if (activeOnly) params.isActive = true;
+            
+            try {
+                const properties = await API.searchProperties(params);
+                displayProperties(properties);
+                UI.showSuccess(`Found ${properties.length} properties`);
+            } catch (error) {
+                UI.showError(error);
+            }
+        }
+
+        async function handleAddProperty(event) {
+            event.preventDefault();
+            
+            const data = {
+                atakNumber: document.getElementById('atakNumber').value,
+                amaNumber: document.getElementById('amaNumber').value,
+                squareMeters: parseFloat(document.getElementById('squareMeters').value),
+                type: document.getElementById('type').value,
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                postalCode: document.getElementById('postalCode').value,
+                country: document.getElementById('country').value,
+                region: document.getElementById('region').value,
+                latitude: parseFloat(document.getElementById('latitude').value),
+                longitude: parseFloat(document.getElementById('longitude').value),
+                nightlyRate: parseFloat(document.getElementById('nightlyRate').value),
+                cleaningFee: parseFloat(document.getElementById('cleaningFee').value)
+            };
+            
+            try {
+                const response = await API.addProperty(data);
+                UI.showSuccess('Property added successfully!');
+                document.getElementById('addPropertyForm').reset();
+                loadAllProperties();
+            } catch (error) {
+                UI.showError(error);
+            }
+        }
+
+        async function deleteProperty(amaNumber) {
+            if (!confirm(`Delete property ${amaNumber}?`)) return;
+            
+            try {
+                await API.deleteProperty(amaNumber);
+                UI.showSuccess('Property deleted successfully');
+                loadAllProperties();
+            } catch (error) {
+                UI.showError(error);
+            }
+        }
+
+        function displayProperties(properties) {
+            const container = document.getElementById('propertiesList');
+            
+            if (!properties || properties.length === 0) {
+                container.innerHTML = '<div class="empty-state">No properties found</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>AMA Number</th>
+                                <th>Type</th>
+                                <th>Area (m²)</th>
+                                <th>Location</th>
+                                <th>Nightly Rate</th>
+                                <th>Cleaning Fee</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${properties.map(p => `
+                                <tr>
+                                    <td><strong>${p.amaNumber}</strong></td>
+                                    <td>${p.type}</td>
+                                    <td>${p.squareMeters}</td>
+                                    <td>${p.city}, ${p.region}</td>
+                                    <td>${UI.formatCurrency(p.nightlyRate)}</td>
+                                    <td>${UI.formatCurrency(p.cleaningFee)}</td>
+                                    <td>${p.isActive ? '✅ Active' : '❌ Inactive'}</td>
+                                    <td>
+                                        <button onclick="deleteProperty('${p.amaNumber}')" 
+                                                class="btn btn-danger btn-small">Delete</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (UI.requireAuth()) {
+                loadAllProperties();
+            }
+        });
+    </script>
+</body>
+</html>
