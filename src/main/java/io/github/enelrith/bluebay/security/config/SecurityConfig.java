@@ -67,7 +67,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth", "/properties-ui", "/bookings-ui", "/users-ui", "/amenities-ui").permitAll()
+                        .requestMatchers("/", "/test-ui", "/auth", "/properties-ui", "/bookings-ui", "/users-ui", "/amenities-ui").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/users/login").permitAll()
@@ -79,7 +79,6 @@ public class SecurityConfig {
                         .requestMatchers("/checkout-success").permitAll()
                         .requestMatchers("/checkout-failed").permitAll()
                         .requestMatchers("/amenities/**").hasRole("ADMIN")
-                        .requestMatchers("/test-ui").permitAll()
                         .requestMatchers(HttpMethod.POST, "/checkout/webhook").permitAll()
                         .anyRequest().authenticated()
                 )

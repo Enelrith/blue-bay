@@ -11,6 +11,11 @@ public class ViewController {
         return "index";
     }
 
+    @GetMapping("/test-ui")
+    public String testUI() {
+        return "test-ui";
+    }
+
     @GetMapping("/auth")
     public String auth() {
         return "auth";
