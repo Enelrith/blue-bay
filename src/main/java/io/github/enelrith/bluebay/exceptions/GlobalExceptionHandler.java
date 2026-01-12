@@ -7,6 +7,8 @@ import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
 import io.github.enelrith.bluebay.bookings.exceptions.InvalidDatesException;
 import io.github.enelrith.bluebay.payment.stripe.exceptions.StripePaymentFailedException;
 import io.github.enelrith.bluebay.properties.exceptions.*;
+import io.github.enelrith.bluebay.reviews.exceptions.ReviewAlreadyExistsException;
+import io.github.enelrith.bluebay.reviews.exceptions.ReviewNotFoundException;
 import io.github.enelrith.bluebay.roles.exceptions.RoleAlreadyExistsException;
 import io.github.enelrith.bluebay.roles.exceptions.RoleNotFoundException;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
@@ -173,5 +175,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ImageAlreadyExistsException.class)
     public ResponseEntity<String> handleException(ImageAlreadyExistsException e){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ReviewAlreadyExistsException.class)
+    public ResponseEntity<String> handleException(ReviewAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<String> handleException(ReviewNotFoundException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

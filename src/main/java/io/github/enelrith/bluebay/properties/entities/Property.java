@@ -2,6 +2,7 @@ package io.github.enelrith.bluebay.properties.entities;
 
 import io.github.enelrith.bluebay.bookings.entities.Booking;
 import io.github.enelrith.bluebay.enums.PropertyType;
+import io.github.enelrith.bluebay.reviews.entities.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -69,11 +71,14 @@ public class Property {
     private BigDecimal cleaningFee;
 
     @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
-    private Set<Booking> bookings;
+    private Set<Booking> bookings = new HashSet<>();
 
     @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
-    private Set<PropertyAmenity> propertyAmenities;
+    private Set<PropertyAmenity> propertyAmenities = new HashSet<>();
 
     @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
-    private Set<PropertyImage> propertyImages;
+    private Set<PropertyImage> propertyImages = new HashSet<>();
+
+    @OneToMany(mappedBy = "property",  fetch = FetchType.LAZY)
+    private Set<Review> reviews = new HashSet<>();
 }

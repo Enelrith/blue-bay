@@ -1,6 +1,7 @@
 package io.github.enelrith.bluebay.users.entities;
 
 import io.github.enelrith.bluebay.bookings.entities.Booking;
+import io.github.enelrith.bluebay.reviews.entities.Review;
 import io.github.enelrith.bluebay.roles.entities.Role;
 import io.github.enelrith.bluebay.security.entities.RefreshToken;
 import jakarta.persistence.*;
@@ -66,6 +67,9 @@ public class User implements UserDetails {
                joinColumns = @JoinColumn(name = "user_id"),
                inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Review> reviews = new HashSet<>();
 
     @Override
     public Set<? extends GrantedAuthority> getAuthorities() {
