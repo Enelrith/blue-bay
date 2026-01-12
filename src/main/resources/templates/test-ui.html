@@ -9,6 +9,7 @@
 </head>
 <body>
     <div>
+        <h1>Register User</h1>
         <form>
             <label>
                 <input type="email" id="register-email" placeholder="Email" required>
@@ -19,7 +20,20 @@
             <button type="submit" id="register-user">Register</button>
         </form>
     </div>
-
+    <button id="refresh-token">Refresh</button>
+    <div>
+        <h1>Login User</h1>
+        <form>
+            <label>
+                <input type="email" id="login-email" placeholder="Email" required>
+            </label>
+            <label>
+                <input type="password" id="login-password" placeholder="Password" required>
+            </label>
+            <button type="submit" id="login-user">Login</button>
+        </form>
+    </div>
+    <button id="get-properties">Get Properties</button>
 </body>
 <script src="/js/test.js"></script>
 </html>
