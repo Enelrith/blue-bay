@@ -49,7 +49,7 @@ public class BookingService {
     }
 
     @Transactional
-    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
+    @PreAuthorize("#userId == authentication.principal.id and hasRole('COMPLETED_ACCOUNT') or hasRole('ADMIN')")
     public PaymentGatewayResponse addBooking(Long userId, Integer propertyId, AddBookingRequest request) {
         if (ChronoUnit.DAYS.between(request.checkIn(), request.checkOut()) < 2) throw new InvalidDatesException("The minimum stay is 2 days");
         if (bookingRepository.existsByProperty_IdAndCheckInIsLessThanAndCheckOutIsGreaterThan(propertyId, request.checkOut(), request.checkIn()))
@@ -93,6 +93,7 @@ public class BookingService {
      * @return
      */
     @Transactional
+    @PreAuthorize("hasRole('COMPLETED_ACCOUNT') or hasRole('ADMIN')")
     public GetUserBookingResponse cancelBooking(Long bookingId) {
         var userId = SecurityUtil.getCurrentUserId();
         var booking = bookingRepository.findByIdAndUser_Id(bookingId, userId).orElseThrow(() ->
