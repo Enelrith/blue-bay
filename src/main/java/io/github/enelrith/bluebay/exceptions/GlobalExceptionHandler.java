@@ -164,4 +164,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleException(UserInformationAlreadyExistsException e){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
+
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<String> handleException(ImageNotFoundException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ImageAlreadyExistsException.class)
+    public ResponseEntity<String> handleException(ImageAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
 }

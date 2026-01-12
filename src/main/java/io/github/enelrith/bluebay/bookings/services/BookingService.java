@@ -1,19 +1,20 @@
 package io.github.enelrith.bluebay.bookings.services;
 
-import com.stripe.exception.StripeException;
 import io.github.enelrith.bluebay.bookings.dto.AddBookingRequest;
-import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsResponse;
+import io.github.enelrith.bluebay.bookings.dto.GetUserBookingResponse;
 import io.github.enelrith.bluebay.bookings.dto.UpdateBookingStatusRequest;
+import io.github.enelrith.bluebay.bookings.exceptions.BookingAlreadyExistsException;
 import io.github.enelrith.bluebay.bookings.exceptions.BookingNotFoundException;
+import io.github.enelrith.bluebay.bookings.exceptions.InvalidDatesException;
 import io.github.enelrith.bluebay.bookings.mappers.BookingMapper;
 import io.github.enelrith.bluebay.bookings.repositories.BookingRepository;
 import io.github.enelrith.bluebay.enums.BookingStatus;
 import io.github.enelrith.bluebay.payment.IPaymentGateway;
 import io.github.enelrith.bluebay.payment.stripe.dto.PaymentGatewayResponse;
 import io.github.enelrith.bluebay.payment.stripe.exceptions.StripePaymentFailedException;
-import io.github.enelrith.bluebay.properties.exceptions.PropertyIsNotActiveException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
 import io.github.enelrith.bluebay.properties.repositories.PropertyRepository;
+import io.github.enelrith.bluebay.security.utilities.SecurityUtil;
 import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
 import io.github.enelrith.bluebay.users.repositories.UserRepository;
 import lombok.AllArgsConstructor;
@@ -39,21 +40,22 @@ public class BookingService {
     private final IPaymentGateway paymentGateway;
 
     @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
-    public List<GetAllUserBookingsResponse> getAllUserBookings(Long  userId) {
+    public List<GetUserBookingResponse> getAllUserBookings(Long  userId) {
         var booking = bookingRepository.findByUserId(userId).orElseThrow(
                 () -> new BookingNotFoundException("Booking not found")
         );
 
-        return bookingMapper.toGetAllUserBookingsResponse(booking);
+        return bookingMapper.toGetUserBookingsResponse(booking);
     }
 
     @Transactional
-    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
-    public PaymentGatewayResponse addBooking(Long userId, int propertyId, AddBookingRequest request) {
+    @PreAuthorize("#userId == authentication.principal.id and hasRole('COMPLETED_ACCOUNT') or hasRole('ADMIN')")
+    public PaymentGatewayResponse addBooking(Long userId, Integer propertyId, AddBookingRequest request) {
+        if (ChronoUnit.DAYS.between(request.checkIn(), request.checkOut()) < 2) throw new InvalidDatesException("The minimum stay is 2 days");
+        if (bookingRepository.existsByProperty_IdAndCheckInIsLessThanAndCheckOutIsGreaterThan(propertyId, request.checkOut(), request.checkIn()))
+            throw new BookingAlreadyExistsException("These dates are not currently available for booking");
         var user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
         var property = propertyRepository.findById(propertyId).orElseThrow(() -> new PropertyNotFoundException("Property not found"));
-
-        if (property.getIsActive() == false) throw new PropertyIsNotActiveException("Property is not currently available");
 
         var booking = bookingMapper.toEntity(request);
 
@@ -85,13 +87,30 @@ public class BookingService {
         return paymentResponse;
     }
 
+    /**
+     * TODO: Add refund logic
+     * @param bookingId
+     * @return
+     */
     @Transactional
-    public void updateBookingStatus(Long id, UpdateBookingStatusRequest request) {
-        var booking = bookingRepository.findById(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+    @PreAuthorize("hasRole('COMPLETED_ACCOUNT') or hasRole('ADMIN')")
+    public GetUserBookingResponse cancelBooking(Long bookingId) {
+        var userId = SecurityUtil.getCurrentUserId();
+        var booking = bookingRepository.findByIdAndUser_Id(bookingId, userId).orElseThrow(() ->
+                new BookingNotFoundException("Booking not found"));
+        booking.setStatus(BookingStatus.CANCELLED);
 
+        return bookingMapper.toGetUserBookingResponse(booking);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public GetUserBookingResponse updateBookingStatus(Long id, UpdateBookingStatusRequest request) {
+        var booking = bookingRepository.findById(id).orElseThrow(() ->
+                new BookingNotFoundException("Booking not found"));
         booking.setStatus(request.status());
 
-        bookingRepository.save(booking);
+        return bookingMapper.toGetUserBookingResponse(booking);
     }
 
     private BigDecimal calculateNetPayment(Integer propertyId, LocalDateTime checkIn,

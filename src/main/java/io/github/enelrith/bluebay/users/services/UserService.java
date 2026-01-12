@@ -7,6 +7,7 @@ import io.github.enelrith.bluebay.roles.repositories.RoleRepository;
 import io.github.enelrith.bluebay.security.exceptions.ForbiddenAccessException;
 import io.github.enelrith.bluebay.security.utilities.SecurityUtil;
 import io.github.enelrith.bluebay.users.dto.*;
+import io.github.enelrith.bluebay.users.entities.UserInformation;
 import io.github.enelrith.bluebay.users.exceptions.UserAlreadyExistsException;
 import io.github.enelrith.bluebay.users.exceptions.UserInformationAlreadyExistsException;
 import io.github.enelrith.bluebay.users.exceptions.UserNotFoundException;
@@ -112,16 +113,47 @@ public class UserService {
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public AddUserInformationResponse addUserInformation(Long id, AddUserInformationRequest request) {
         if (userInformationRepository.existsById(id)) throw new UserInformationAlreadyExistsException("This user already has a profile");
-
         var user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+
         var userInformation = userInformationMapper.toEntity(request);
         userInformation.setUser(user);
         userInformation.setCompletedAt(Instant.now());
+        user.getRoles().add(roleRepository.findByName(RoleNames.COMPLETED_ACCOUNT).orElseThrow(() -> new RoleNotFoundException("Role not found")));
 
         userInformationRepository.save(userInformation);
 
         return userInformationMapper.toAddUserInformationResponse(userInformation);
     }
+
+    @Transactional
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+    public AddUserInformationResponse updateUserInformation(Long id, UpdateUserInformationRequest request) {
+        var user = userRepository.findUserWithRolesById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        user.setUserInformation(userInformationMapper.toEntity(request, user.getUserInformation()));
+        var userInformation = user.getUserInformation();
+
+        if (nullExistsInUserInformation(userInformation)) {
+            var userRoles = user.getRoles();
+            var completedAccountRole = roleRepository.findByName(RoleNames.COMPLETED_ACCOUNT).orElseThrow(() ->
+                    new RoleNotFoundException("Role not found"));
+
+            userRoles.remove(completedAccountRole);
+            userInformation.setCompletedAt(null);
+        } else {
+            if (userInformation.getCompletedAt() == null) {
+                var userRoles = user.getRoles();
+                var completedAccountRole = roleRepository.findByName(RoleNames.COMPLETED_ACCOUNT).orElseThrow(() ->
+                        new RoleNotFoundException("Role not found"));
+
+                userRoles.add(completedAccountRole);
+                userInformation.setCompletedAt(Instant.now());
+            }
+        }
+        return userInformationMapper.toAddUserInformationResponse(userInformation);
+    }
+
+
 
     /**
      * Checks if a user with a specific email exists
@@ -134,14 +166,12 @@ public class UserService {
     private boolean userExists(Long id) {
         return userRepository.existsById(id);
     }
-
-    /**
-     * Checks if the current user's id matches the id of the user it is trying to access.
-     * @param id The id of the user the current user is trying to access
-     * @throws ForbiddenAccessException thrown when the current user's id doesn't match the id in the request
-     */
-    private void isUserForbidden(Long id) {
-        var currentUserId = SecurityUtil.getCurrentUserId();
-        if (!id.equals(currentUserId)) throw new ForbiddenAccessException("You are not allowed to access this content");
+    private boolean nullExistsInUserInformation(UserInformation userInformation) {
+        if (userInformation.getFirstName() != null && userInformation.getLastName() != null && userInformation.getDateOfBirth() != null
+                && userInformation.getNationality() != null && userInformation.getIdDocumentType() != null
+                && userInformation.getIdDocumentNumber() != null) {
+            return false;
+        }
+        return true;
     }
 }

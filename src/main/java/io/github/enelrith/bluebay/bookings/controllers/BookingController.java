@@ -1,7 +1,7 @@
 package io.github.enelrith.bluebay.bookings.controllers;
 
 import io.github.enelrith.bluebay.bookings.dto.AddBookingRequest;
-import io.github.enelrith.bluebay.bookings.dto.GetAllUserBookingsResponse;
+import io.github.enelrith.bluebay.bookings.dto.GetUserBookingResponse;
 import io.github.enelrith.bluebay.bookings.dto.UpdateBookingStatusRequest;
 import io.github.enelrith.bluebay.bookings.services.BookingService;
 import io.github.enelrith.bluebay.payment.stripe.dto.PaymentGatewayResponse;
@@ -19,7 +19,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<GetAllUserBookingsResponse>>  getAllUserBookings(@PathVariable Long userId) {
+    public ResponseEntity<List<GetUserBookingResponse>>  getAllUserBookings(@PathVariable Long userId) {
         return ResponseEntity.ok(bookingService.getAllUserBookings(userId));
     }
 
@@ -31,9 +31,20 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.addBooking(userId, propertyId, request));
     }
 
+    /**
+     * TODO: Add user authentication and response entity GetUserBookingResponse
+     * @param id
+     * @param request
+     * @return
+     */
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateBookingStatus(@PathVariable Long id, @Valid @RequestBody UpdateBookingStatusRequest request) {
-        bookingService.updateBookingStatus(id, request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<GetUserBookingResponse> updateBookingStatus(@PathVariable Long id,
+                                                                      @Valid @RequestBody UpdateBookingStatusRequest request) {
+        return ResponseEntity.ok(bookingService.updateBookingStatus(id, request));
+    }
+
+    @PatchMapping("/{id}/cancellation")
+    public ResponseEntity<GetUserBookingResponse> cancelBooking(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.cancelBooking(id));
     }
 }

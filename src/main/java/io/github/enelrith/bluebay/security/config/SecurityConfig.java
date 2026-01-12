@@ -78,6 +78,13 @@ public class SecurityConfig {
                         .requestMatchers("/roles/**").hasRole("ADMIN")
                         .requestMatchers("/checkout-success").permitAll()
                         .requestMatchers("/checkout-failed").permitAll()
+                        .requestMatchers("/property-images/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/amenities/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/checkout/webhook").permitAll()
                         .anyRequest().authenticated()

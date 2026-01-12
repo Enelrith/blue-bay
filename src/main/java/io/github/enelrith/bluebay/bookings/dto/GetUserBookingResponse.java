@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record GetAllUserBookingsResponse(LocalDateTime checkIn,
+public record GetUserBookingResponse(LocalDateTime checkIn,
                                          LocalDateTime checkOut,
                                          BookingStatus status,
                                          BigDecimal netPayment,

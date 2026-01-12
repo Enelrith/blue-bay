@@ -5,6 +5,7 @@ import io.github.enelrith.bluebay.properties.services.PropertyService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,5 +68,13 @@ public class PropertyController {
     public ResponseEntity<Void> deletePropertyAmenity(@PathVariable Integer id) {
         propertyService.deletePropertyAmenity(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/images")
+    public ResponseEntity<String> addPropertyImage(@PathVariable Integer id,
+                                                   @Valid @RequestBody AddPropertyImageRequest request,
+                                                   @Value("${websiteUrl}") String baseUrl,
+                                                   @Value("${files.propertyImagesPath}") String propertyImagesDirectory) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(propertyService.addPropertyImage(id, request, baseUrl, propertyImagesDirectory));
     }
 }
