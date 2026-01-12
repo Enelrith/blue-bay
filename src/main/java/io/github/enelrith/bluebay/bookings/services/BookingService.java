@@ -87,6 +87,11 @@ public class BookingService {
         return paymentResponse;
     }
 
+    /**
+     * TODO: Add refund logic
+     * @param bookingId
+     * @return
+     */
     @Transactional
     public GetUserBookingResponse cancelBooking(Long bookingId) {
         var userId = SecurityUtil.getCurrentUserId();
