@@ -73,4 +73,7 @@ public class Property {
 
     @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
     private Set<PropertyAmenity> propertyAmenities;
+
+    @OneToMany(mappedBy = "property", fetch = FetchType.LAZY)
+    private Set<PropertyImage> propertyImages;
 }

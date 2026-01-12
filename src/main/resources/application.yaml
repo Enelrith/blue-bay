@@ -18,4 +18,6 @@ stripe:
   publicKey: ${STRIPE_PUBLIC_KEY}
   secretKey: ${STRIPE_SECRET_KEY}
   webhookSecretKey: ${STRIPE_WEBHOOK_KEY}
+files:
+  propertyImagesPath: ${PROPERTY_IMAGES_PATH}
 websiteUrl: ${WEBSITE_URL}

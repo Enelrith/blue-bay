@@ -6,17 +6,27 @@ import io.github.enelrith.bluebay.amenities.repositories.AmenityRepository;
 import io.github.enelrith.bluebay.properties.dto.*;
 import io.github.enelrith.bluebay.properties.entities.Property;
 import io.github.enelrith.bluebay.properties.entities.PropertyAmenity;
+import io.github.enelrith.bluebay.properties.entities.PropertyImage;
+import io.github.enelrith.bluebay.properties.exceptions.ImageAlreadyExistsException;
+import io.github.enelrith.bluebay.properties.exceptions.ImageNotFoundException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyAlreadyExistsException;
 import io.github.enelrith.bluebay.properties.exceptions.PropertyNotFoundException;
+import io.github.enelrith.bluebay.properties.mappers.PropertyImageMapper;
 import io.github.enelrith.bluebay.properties.mappers.PropertyMapper;
 import io.github.enelrith.bluebay.properties.repositories.PropertyAmenityRepository;
+import io.github.enelrith.bluebay.properties.repositories.PropertyImageRepository;
 import io.github.enelrith.bluebay.properties.repositories.PropertyRepository;
 import io.github.enelrith.bluebay.properties.repositories.specifications.PropertySpec;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -27,6 +37,8 @@ public class PropertyService {
     private final PropertyMapper propertyMapper;
     private final AmenityRepository amenityRepository;
     private final PropertyAmenityRepository propertyAmenityRepository;
+    private final PropertyImageMapper propertyImageMapper;
+    private final PropertyImageRepository propertyImageRepository;
 
     @Transactional
     public AddPropertyResponse addProperty(AddPropertyRequest request) {
@@ -118,5 +130,22 @@ public class PropertyService {
     public void deletePropertyAmenity(Integer id) {
         if (!propertyAmenityRepository.existsById(id)) throw new AmenityNotFoundException("This amenity does not exist");
         propertyAmenityRepository.deleteById(id);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public String addPropertyImage(Integer id, AddPropertyImageRequest request, String baseUrl, String propertyImagesDirectory) {
+        var property = propertyRepository.findById(id).orElseThrow(() -> new PropertyNotFoundException("Property not found"));
+        if (propertyImageRepository.existsByNameAndProperty_Id(request.name(), id)) throw new ImageAlreadyExistsException("This image already exists for this property");
+
+        Path imagePath = Paths.get(propertyImagesDirectory).resolve(request.name());
+        if (!Files.exists(imagePath)) throw new ImageNotFoundException("This image does not exist");
+
+       var propertyImage = propertyImageMapper.toEntity(request);
+       propertyImage.setProperty(property);
+
+       propertyImageRepository.save(propertyImage);
+
+       return baseUrl + "/property-images/" + request.name();
     }
 }
