@@ -11,10 +11,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record AddBookingRequest(@NotNull(message = "Check in date cannot be null")
-                                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
+                                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
                                 LocalDateTime checkIn,
                                 @NotNull(message = "Check out date cannot be null")
-                                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
+                                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
                                 LocalDateTime checkOut,
                                 @NotNull(message = "Payment type cannot be null") BookingPaymentType bookingPaymentType,
                                 @NotNull(message = "Source cannot be null") BookingSource source) {
