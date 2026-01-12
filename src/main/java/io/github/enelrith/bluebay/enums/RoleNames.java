@@ -3,5 +3,6 @@ package io.github.enelrith.bluebay.enums;
 public enum RoleNames {
     USER,
     ADMIN,
-    MODERATOR
+    MODERATOR,
+    COMPLETED_ACCOUNT
 }

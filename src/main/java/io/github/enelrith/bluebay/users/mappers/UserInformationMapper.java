@@ -2,6 +2,7 @@ package io.github.enelrith.bluebay.users.mappers;
 
 import io.github.enelrith.bluebay.users.dto.AddUserInformationRequest;
 import io.github.enelrith.bluebay.users.dto.AddUserInformationResponse;
+import io.github.enelrith.bluebay.users.dto.UpdateUserInformationRequest;
 import io.github.enelrith.bluebay.users.entities.UserInformation;
 import org.mapstruct.*;
 
@@ -19,4 +20,10 @@ public interface UserInformationMapper {
 
     AddUserInformationResponse toAddUserInformationResponse(UserInformation userInformation);
 
+    UserInformation toEntity(UpdateUserInformationRequest updateUserInformationRequest);
+
+    UpdateUserInformationRequest toUpdateUserInformationRequest(UserInformation userInformation);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    UserInformation toEntity(UpdateUserInformationRequest updateUserInformationRequest, @MappingTarget UserInformation userInformation);
 }

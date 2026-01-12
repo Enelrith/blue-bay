@@ -73,9 +73,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/user-information/{id}")
+    @PostMapping("/{id}/user-information")
     public ResponseEntity<AddUserInformationResponse> addUserInformation(@PathVariable Long id,
                                                                          @Valid @RequestBody AddUserInformationRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addUserInformation(id, request));
+    }
+
+    @PatchMapping("/{id}/user-information")
+    public ResponseEntity<AddUserInformationResponse> updateUserInformation(@PathVariable Long id,
+                                                                            @Valid @RequestBody UpdateUserInformationRequest request) {
+        return ResponseEntity.ok(userService.updateUserInformation(id, request));
     }
 }
