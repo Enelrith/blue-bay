@@ -1,6 +1,7 @@
 package io.github.enelrith.bluebay.security.config;
 
 import io.github.enelrith.bluebay.security.filters.JwtAuthenticationFilter;
+import io.github.enelrith.bluebay.security.filters.RateLimitFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,7 +63,7 @@ public class SecurityConfig {
      * @throws Exception if an error occurs while building the security filter chain
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, RateLimitFilter rateLimitFilter) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -96,7 +97,8 @@ public class SecurityConfig {
                                 response.sendError(HttpStatus.FORBIDDEN.value(), "Forbidden")
                         )
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter, RateLimitFilter.class);
 
         return http.build();
     }
