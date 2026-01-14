@@ -12,6 +12,6 @@ public record AddReviewRequest(@NotNull(message = "The score cannot be null")
                                @Min(message = "The score must be at least 1", value = 1)
                                @Max(message = "The score cannot be more than 5", value = 5)
                                Integer score,
-                               @Size(message = "The description can be 1 to 255 characters long", min = 1, max = 255)
+                               @Size(message = "The description must be between {min} and {max} characters long", min = 1, max = 255)
                                String description) {
 }

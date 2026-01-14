@@ -13,6 +13,8 @@ public record AddBookingRequest(@NotNull(message = "Check in date cannot be null
                                 @NotNull(message = "Check out date cannot be null")
                                 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
                                 LocalDateTime checkOut,
-                                @NotNull(message = "Payment type cannot be null") BookingPaymentType bookingPaymentType,
-                                @NotNull(message = "Source cannot be null") BookingSource source) {
+                                @NotNull(message = "Payment type cannot be null")
+                                BookingPaymentType bookingPaymentType,
+                                @NotNull(message = "Source cannot be null")
+                                BookingSource source) {
 }

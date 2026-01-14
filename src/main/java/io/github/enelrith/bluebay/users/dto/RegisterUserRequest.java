@@ -10,6 +10,9 @@ import jakarta.validation.constraints.Size;
  * @param email User desired email
  * @param password User desired password
  */
-public record RegisterUserRequest(@Email(message = "Must be a valid email") @NotBlank(message = "Email cannot be blank") String email,
-                                  @Size(message = "Password must be between 6-72 characters", min = 6, max = 72) @NotBlank(message = "Password cannot be blank") String password) {
+public record RegisterUserRequest(@Email(message = "Must be a valid email") @NotBlank(message = "Email cannot be blank")
+                                  String email,
+                                  @Size(message = "Password must be between {min} and {max} characters long", min = 6, max = 72)
+                                  @NotBlank(message = "Password cannot be blank")
+                                  String password) {
 }

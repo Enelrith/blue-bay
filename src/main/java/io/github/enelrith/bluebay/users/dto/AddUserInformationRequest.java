@@ -6,6 +6,7 @@ import io.github.enelrith.bluebay.users.exceptions.NotAnAdultException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -21,17 +22,22 @@ import java.time.Period;
  * @param idDocumentNumber ID document number of the user
  */
 public record AddUserInformationRequest(@NotBlank(message = "First name cannot be blank")
+                                        @Size(message = "First name must be between {min} and {max} characters long", min = 1, max = 100)
                                         String firstName,
                                         @NotBlank(message = "Last name cannot be blank")
+                                        @Size(message = "Last name must be between {min} and {max} characters long", min = 1, max = 100)
                                         String lastName,
                                         @NotNull(message = "Date of birth cannot be null")
                                         @Past(message = "The date of birth cannot be in the present or future")
                                         LocalDate dateOfBirth,
                                         @NotBlank(message = "Nationality cannot be blank")
+                                        @Size(message = "Nationality must be between {min} and {max} characters long", min = 1, max = 100)
                                         String nationality,
                                         @NotBlank(message = "The ID document type cannot be blank")
+                                        @Size(message = "ID document type must be between {min} and {max} characters long", min = 1, max = 50)
                                         String idDocumentType,
                                         @NotNull(message = "The id document number cannot be null")
+                                        @Size(message = "ID document number must be between {min} and {max} characters long", min = 1, max = 100)
                                         String idDocumentNumber) {
     public AddUserInformationRequest {
         LocalDate currentDate =  LocalDate.now();

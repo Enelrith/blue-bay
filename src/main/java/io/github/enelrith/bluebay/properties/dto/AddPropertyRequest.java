@@ -22,30 +22,30 @@ import java.math.BigDecimal;
  * @param country Country the property is located in
  * @param region Region the property is located in
  */
-public record AddPropertyRequest(@NotBlank(message = "ATAK  number cannot be blank")
-                                 @Size(message = "ATAK number cannot be more than 255 characters long", max = 255)
+public record AddPropertyRequest(@NotBlank(message = "ATAK number cannot be blank")
+                                 @Size(message = "ATAK number must be {min} and {max} characters long", min = 1, max = 255)
                                  String atakNumber,
                                  @NotBlank(message = "AMA number cannot be blank")
-                                 @Size(message = "AMA number cannot be more than 255 characters long", max = 255)
+                                 @Size(message = "AMA number must be between {min} and {max} characters long", min = 1, max = 255)
                                  String amaNumber,
                                  @NotNull(message = "Area cannot be null")
                                  @Positive(message = "Area cannot be negative or zero")
                                  BigDecimal squareMeters,
                                  PropertyType type,
                                  @NotBlank(message = "Street cannot be blank")
-                                 @Size(message = "Street cannot be more than 100 characters long", max = 100)
+                                 @Size(message = "Street must be between {min} and {max} characters long", min = 1, max = 100)
                                  String street,
                                  @NotBlank(message = "City cannot be blank")
-                                 @Size(message = "City cannot be more than 100 characters long", max = 100)
+                                 @Size(message = "City must be between {min} and {max} characters long", min = 1, max = 100)
                                  String city,
                                  @NotBlank(message = "Postal code cannot be blank")
-                                 @Size(message = "Postal code cannot be more than 20 characters long", max = 20)
+                                 @Size(message = "Postal code must be between {min} and {max} characters long", min = 1, max = 20)
                                  String postalCode,
                                  @NotBlank(message = "Country cannot be blank")
-                                 @Size(message = "Country cannot be more than 100 characters long", max = 100)
+                                 @Size(message = "Country must be between {min} and {max} characters long", min = 1, max = 100)
                                  String country,
                                  @NotBlank(message = "Region cannot be blank")
-                                 @Size(message = "Region cannot be more than 100 characters long", max = 100)
+                                 @Size(message = "Region must be between {min} and {max} characters long", min = 1, max = 100)
                                  String region,
                                  @NotNull(message = "Latitude cannot be null")
                                  BigDecimal latitude,

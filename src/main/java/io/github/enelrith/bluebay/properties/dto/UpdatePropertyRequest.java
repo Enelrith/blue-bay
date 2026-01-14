@@ -9,15 +9,15 @@ import java.math.BigDecimal;
 public record UpdatePropertyRequest(@Positive(message = "Area cannot be negative or zero")
                                     BigDecimal squareMeters,
                                     PropertyType type,
-                                    @Size(message = "Street cannot be more than 100 characters long", max = 100)
+                                    @Size(message = "Street must be between {min} and {max} characters long", min = 1, max = 100)
                                     String street,
-                                    @Size(message = "City cannot be more than 100 characters long", max = 100)
+                                    @Size(message = "City must be between {min} and {max} characters long", min = 1, max = 100)
                                     String city,
-                                    @Size(message = "Postal code cannot be more than 20 characters long", max = 20)
+                                    @Size(message = "Postal code must be between {min} and {max} characters long", min = 1, max = 20)
                                     String postalCode,
-                                    @Size(message = "Country cannot be more than 100 characters long", max = 100)
+                                    @Size(message = "Country must be between {min} and {max} characters long", min = 1, max = 100)
                                     String country,
-                                    @Size(message = "Region cannot be more than 100 characters long", max = 100)
+                                    @Size(message = "Region must be between {min} and {max} characters long", min = 1, max = 100)
                                     String region,
                                     BigDecimal latitude,
                                     BigDecimal longitude,
