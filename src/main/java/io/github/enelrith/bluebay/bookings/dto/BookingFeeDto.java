@@ -5,7 +5,8 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 /**
- * DTO for {@link BookingFee}
+ * DTO for {@link io.github.enelrith.bluebay.bookings.entities.BookingFee}
+ * Used in {@link io.github.enelrith.bluebay.bookings.services.BookingFeeService}
  */
 public record BookingFeeDto(@Size(message = "Type must be between {min} and {max} characters long", min = 1, max = 50)
                             @NotBlank(message = "Type cannot be blank") 
