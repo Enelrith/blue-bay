@@ -3,11 +3,8 @@ package io.github.enelrith.bluebay.bookings.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.enelrith.bluebay.enums.BookingPaymentType;
 import io.github.enelrith.bluebay.enums.BookingSource;
-import io.github.enelrith.bluebay.enums.BookingStatus;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record AddBookingRequest(@NotNull(message = "Check in date cannot be null")

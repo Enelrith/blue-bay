@@ -5,7 +5,6 @@ import io.github.enelrith.bluebay.users.exceptions.InvalidIdDocumentTypeExceptio
 import io.github.enelrith.bluebay.users.exceptions.NotAnAdultException;
 import jakarta.validation.constraints.Past;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 

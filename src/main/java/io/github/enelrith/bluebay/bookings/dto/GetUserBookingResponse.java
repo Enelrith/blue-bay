@@ -5,7 +5,6 @@ import io.github.enelrith.bluebay.enums.BookingSource;
 import io.github.enelrith.bluebay.enums.BookingStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record GetUserBookingResponse(LocalDateTime checkIn,

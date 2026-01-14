@@ -1,6 +1,5 @@
 package io.github.enelrith.bluebay.reviews.dto;
 
-import java.io.Serializable;
 import java.time.Instant;
 
 /**

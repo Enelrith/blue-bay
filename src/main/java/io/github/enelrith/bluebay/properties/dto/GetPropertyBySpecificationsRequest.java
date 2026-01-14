@@ -10,7 +10,6 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record GetPropertyBySpecificationsRequest(String amaNumber,
                                                  Boolean isActive,
