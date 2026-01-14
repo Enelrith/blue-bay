@@ -3,8 +3,6 @@ package io.github.enelrith.bluebay.amenities.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.io.Serializable;
-
 /**
  * DTO for {@link io.github.enelrith.bluebay.amenities.entities.Amenity}
  */

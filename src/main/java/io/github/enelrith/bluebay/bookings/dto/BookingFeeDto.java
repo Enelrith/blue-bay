@@ -1,9 +1,7 @@
 package io.github.enelrith.bluebay.bookings.dto;
 
-import io.github.enelrith.bluebay.bookings.entities.BookingFee;
 import jakarta.validation.constraints.*;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
