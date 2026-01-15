@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/amenities")
-@Tag(name = "Amenities")
+@Tag(name = "Amenities", description = "Handles all operations regarding amenities")
 public class AmenityController {
     private final AmenityService amenityService;
 

@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/properties")
-@Tag(name = "Properties")
+@Tag(name = "Properties", description = "Handles all operations regarding properties")
 public class PropertyController {
     private final PropertyService propertyService;
 
