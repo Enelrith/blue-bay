@@ -66,12 +66,14 @@ public class ReviewService {
 
     @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public List<GetUserReviewsResponse> getUserReviews(Long userId) {
+        if (!userRepository.existsById(userId)) throw new UserNotFoundException("User not found");
         var reviews = reviewRepository.findAllByUser_Id(userId);
 
         return reviewMapper.toGetUserReviewsResponse(reviews);
     }
 
     public List<GetPropertyReviewsResponse> getPropertyReviews(Integer propertyId) {
+        if (!propertyRepository.existsById(propertyId)) throw new PropertyNotFoundException("Property not found");
         var reviews = reviewRepository.findAllByProperty_Id(propertyId);
 
         return reviewMapper.toGetPropertyReviewsResponse(reviews);
