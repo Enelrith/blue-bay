@@ -1,6 +1,8 @@
 package io.github.enelrith.bluebay.properties.dto;
 
 import io.github.enelrith.bluebay.enums.PropertyType;
+import io.github.enelrith.bluebay.properties.dto.data.PropertyData;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,21 +14,24 @@ import java.math.BigDecimal;
  * DTO for {@link io.github.enelrith.bluebay.properties.entities.Property}
  * Used in {@link io.github.enelrith.bluebay.properties.services.PropertyService}
  *
- * @param atakNumber ATAK number of the property
- * @param amaNumber AMA number of the property
- * @param squareMeters Area of the property in square meters
+ * @param atakNumber Unique identifier number given to each building
+ * @param amaNumber Unique identifier number given to each property (e.x rental apartment)
  * @param type Enum that determines the type of the property {@link io.github.enelrith.bluebay.enums.PropertyType}
- * @param street The street the property is located on
- * @param city The city the property is in
- * @param postalCode Postal code of the property
- * @param country Country the property is located in
- * @param region Region the property is located in
  */
+@Schema(description = "Request body for adding a new property")
 public record AddPropertyRequest(@NotBlank(message = "ATAK number cannot be blank")
                                  @Size(message = "ATAK number must be {min} and {max} characters long", min = 1, max = 255)
+                                 @Schema(
+                                         description = "ATAK number unique to the building the apartment is in",
+                                         example = "12345676543"
+                                 )
                                  String atakNumber,
                                  @NotBlank(message = "AMA number cannot be blank")
                                  @Size(message = "AMA number must be between {min} and {max} characters long", min = 1, max = 255)
+                                 @Schema(
+                                         description = "AMA number unique to an apartment or rental property",
+                                         example = "13245316548"
+                                 )
                                  String amaNumber,
                                  @NotNull(message = "Area cannot be null")
                                  @Positive(message = "Area cannot be negative or zero")
@@ -56,6 +61,4 @@ public record AddPropertyRequest(@NotBlank(message = "ATAK number cannot be blan
                                  BigDecimal nightlyRate,
                                  @NotNull(message = "Cleaning fee cannot be null")
                                  @Positive(message = "Cleaning fee must be a positive number")
-                                 BigDecimal cleaningFee)
-{
-}
+                                 BigDecimal cleaningFee) implements PropertyData {}

@@ -1,11 +1,20 @@
 package io.github.enelrith.bluebay.properties.dto;
 
 import io.github.enelrith.bluebay.enums.PropertyType;
+import io.github.enelrith.bluebay.properties.dto.data.PropertyData;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
+/**
+ * DTO for {@link io.github.enelrith.bluebay.properties.entities.Property}
+ * used in {@link io.github.enelrith.bluebay.properties.services.PropertyService}
+ * to handle the update of an existing property
+ */
+
+@Schema(description = "Request body that contains the updated data of a property")
 public record UpdatePropertyRequest(@Positive(message = "Area cannot be negative or zero")
                                     BigDecimal squareMeters,
                                     PropertyType type,
@@ -24,6 +33,6 @@ public record UpdatePropertyRequest(@Positive(message = "Area cannot be negative
                                     @Positive(message = "Nightly rate must be a positive number")
                                     BigDecimal nightlyRate,
                                     @Positive(message = "Cleaning fee must be a positive number")
-                                    BigDecimal cleaningFee)
+                                    BigDecimal cleaningFee) implements PropertyData
 {
 }
