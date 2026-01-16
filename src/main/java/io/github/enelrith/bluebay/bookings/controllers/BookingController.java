@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,8 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/bookings")
-@Tag(name = "Bookings")
+@Tag(name = "Bookings", description = "Handles all operations related to bookings. Required Roles: COMPLETED_ACCOUNT")
+@SecurityRequirement(name = "bearerAuth")
 public class BookingController {
     private final BookingService bookingService;
 

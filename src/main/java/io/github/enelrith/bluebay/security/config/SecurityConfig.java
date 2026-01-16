@@ -72,12 +72,13 @@ public class SecurityConfig {
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/{id}/roles").hasRole("ADMIN")
                         .requestMatchers("/auth/refresh").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/properties/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/properties/**").permitAll()
                         .requestMatchers("/properties/**").hasRole("ADMIN")
                         .requestMatchers("/roles/**").hasRole("ADMIN")
                         .requestMatchers("/checkout-success").permitAll()
                         .requestMatchers("/checkout-failed").permitAll()
-                        .requestMatchers("/property-images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/property-images/**").permitAll()
+                        .requestMatchers("/property-images/**").hasRole("ADMIN")
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",

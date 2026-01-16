@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -30,7 +31,7 @@ public class PropertyController {
      * @param request Data about the new property
      * @return 200 OK and the new property's data
      */
-    @Operation(summary = "Add a new property")
+    @Operation(summary = "Add a new property", description = "Required Roles: ADMIN")
     @ApiResponse(
             responseCode = "201",
             description = "Property created",
@@ -47,6 +48,7 @@ public class PropertyController {
             responseCode = "400",
             description = "Invalid data in the request"
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<AddPropertyResponse> addProperty(@Valid @RequestBody AddPropertyRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(propertyService.addProperty(request));
@@ -126,7 +128,7 @@ public class PropertyController {
      * @param amaNumber Property's AMA number
      * @return 204 NO CONTENT
      */
-    @Operation(summary = "Delete a property")
+    @Operation(summary = "Delete a property", description = "Required Roles: ADMIN")
     @ApiResponse(
             responseCode = "204",
             description = "Property deleted"
@@ -136,6 +138,7 @@ public class PropertyController {
             description = "Property not found"
     )
     @DeleteMapping("/{amaNumber}")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> deleteProperty(@PathVariable String amaNumber) {
         propertyService.deleteProperty(amaNumber);
         return ResponseEntity.noContent().build();
@@ -147,7 +150,7 @@ public class PropertyController {
      * @param request Updated property data
      * @return 200 OK and the updated property
      */
-    @Operation(summary = "Update a property")
+    @Operation(summary = "Update a property", description = "Required Roles: ADMIN")
     @ApiResponse(
             responseCode = "200",
             description = "Property updated",
@@ -160,6 +163,7 @@ public class PropertyController {
             responseCode = "400",
             description = "Property not found or invalid data in the request"
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/{amaNumber}")
     public ResponseEntity<UpdatePropertyResponse> updateProperty(@PathVariable String amaNumber,
                                                                  @Valid @RequestBody UpdatePropertyRequest request) {
@@ -175,7 +179,7 @@ public class PropertyController {
      * @param request Amenity name and quantity
      * @return 200 OK and the property id with the added amenity's name and quantity
      */
-    @Operation(summary = "Add amenity to property")
+    @Operation(summary = "Add amenity to property", description = "Required Roles: ADMIN")
     @ApiResponse(
             responseCode = "200",
             description = "Amenity added",
@@ -188,6 +192,7 @@ public class PropertyController {
             responseCode = "400",
             description = "Property not found, amenity not found or invalid data in the request"
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{propertyId}/amenities/{amenityId}")
     public ResponseEntity<AddPropertyAmenityResponse> addAmenityToProperty(@PathVariable Integer propertyId,
                                                                            @PathVariable Integer amenityId,
@@ -201,7 +206,7 @@ public class PropertyController {
      * @param request Updated quantity
      * @return 200 OK and the updated quantity with the property id and amenity id
      */
-    @Operation(summary = "Update the quantity of a property's amenity")
+    @Operation(summary = "Update the quantity of a property's amenity", description = "Required Roles: ADMIN")
     @ApiResponse(
             responseCode = "200",
             description = "Quantity updated",
@@ -214,6 +219,7 @@ public class PropertyController {
             responseCode = "400",
             description = "Property amenity does not exist"
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/amenities/{id}")
     public ResponseEntity<UpdatePropertyAmenityQuantityResponse> updateAmenityQuantity(@PathVariable Integer id,
                                                                                        @RequestBody UpdatePropertyAmenityQuantityRequest request) {
@@ -225,7 +231,7 @@ public class PropertyController {
      * @param id Property's amenity id
      * @return 204 NO CONTENT
      */
-    @Operation(summary = "Delete a property's amenity")
+    @Operation(summary = "Delete a property's amenity", description = "Required Roles: ADMIN")
     @ApiResponse(
             responseCode = "204",
             description = "Property amenity deleted"
@@ -234,6 +240,7 @@ public class PropertyController {
             responseCode = "400",
             description = "Property amenity not found"
     )
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/amenities/{id}")
     public ResponseEntity<Void> deletePropertyAmenity(@PathVariable Integer id) {
         propertyService.deletePropertyAmenity(id);
@@ -248,7 +255,7 @@ public class PropertyController {
      * @param propertyImagesDirectory Directory where the images are stored
      * @return 201 CREATED and a link to the image
      */
-    @Operation(summary = "Add an image to a property")
+    @Operation(summary = "Add an image to a property", description = "Required Roles: ADMIN")
     @ApiResponse(
             responseCode = "201",
             description = "Image added to property",
@@ -264,6 +271,7 @@ public class PropertyController {
             responseCode = "409",
             description = "The property already has this image"
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/images")
     public ResponseEntity<String> addPropertyImage(@PathVariable Integer id,
                                                    @Valid @RequestBody AddPropertyImageRequest request,

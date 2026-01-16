@@ -4,6 +4,7 @@ import io.github.enelrith.bluebay.amenities.dto.AddAmenityRequest;
 import io.github.enelrith.bluebay.amenities.services.AmenityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/amenities")
-@Tag(name = "Amenities", description = "Handles all operations regarding amenities")
+@Tag(name = "Amenities", description = "Handles all operations regarding amenities. Required Roles: ADMIN")
+@SecurityRequirement(name = "bearerAuth")
 public class AmenityController {
     private final AmenityService amenityService;
 

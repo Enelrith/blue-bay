@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -117,6 +118,7 @@ public class UserController {
      * @param id The user's id
      * @return 204 NO CONTENT
      */
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Deletes an existing user by their id")
     @ApiResponse(
             responseCode = "204",
@@ -141,6 +143,7 @@ public class UserController {
      * @param request Contains the updated email
      * @return 200 OK and the updated email {@link io.github.enelrith.bluebay.users.dto.UpdateUserEmailResponse}
      */
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Update the email of an existing user")
     @ApiResponse(
             responseCode = "200",
@@ -186,6 +189,7 @@ public class UserController {
     )
     @PutMapping("/{id}/password")
     //TODO: Remove the updated password response
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<UpdateUserPasswordResponse> updateUserPassword(@PathVariable Long id,
                                                                          @Valid @RequestBody UpdateUserPasswordRequest request) {
         return ResponseEntity.ok(userService.updateUserPasswordById(id, request.password()));
@@ -216,6 +220,7 @@ public class UserController {
                     mediaType = "application/json"
             )
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/{id}/roles")
     public ResponseEntity<Void> addRoleToUser(@PathVariable Long id, @Valid @RequestBody AddRoleToUserRequest request) {
         userService.addRoleToUser(id, request);
@@ -245,6 +250,7 @@ public class UserController {
             responseCode = "409",
             description = "User already has additional information linked to them"
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{id}/user-information")
     public ResponseEntity<AddUserInformationResponse> addUserInformation(@PathVariable Long id,
                                                                          @Valid @RequestBody AddUserInformationRequest request) {
@@ -273,6 +279,7 @@ public class UserController {
                     mediaType = "application/json"
             )
     )
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/{id}/user-information")
     public ResponseEntity<AddUserInformationResponse> updateUserInformation(@PathVariable Long id,
                                                                             @Valid @RequestBody UpdateUserInformationRequest request) {

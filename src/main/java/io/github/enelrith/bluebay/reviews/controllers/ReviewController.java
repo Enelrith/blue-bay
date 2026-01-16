@@ -4,6 +4,7 @@ import io.github.enelrith.bluebay.reviews.dto.*;
 import io.github.enelrith.bluebay.reviews.services.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -17,10 +18,11 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/reviews")
 @Tag(name =  "Reviews", description = "Handles all operations regarding user reviews")
+@SecurityRequirement(name = "bearerAuth")
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @Operation(summary = "Add a new review for a property")
+    @Operation(summary = "Add a new review for a property", description = "Required Roles: COMPLETED_ACCOUNT")
     @ApiResponse(responseCode = "201", description = "Review created")
     @ApiResponse(
             responseCode = "400",
