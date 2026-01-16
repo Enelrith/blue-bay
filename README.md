@@ -805,7 +805,7 @@ blue-bay/
 - Method-level authorization using @PreAuthorize
 - Rate limiting prevents API abuse
 
-## 🧪 Testing
+## 🧪 Testing (Not Yet Implemented)
 
 Run all tests:
 ```bash
