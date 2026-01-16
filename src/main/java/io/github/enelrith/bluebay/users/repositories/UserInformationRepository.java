@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Repository for {@link io.github.enelrith.bluebay.users.entities.UserInformation}
  */
 public interface UserInformationRepository extends JpaRepository<UserInformation, Long> {
+    boolean existsByUser_Id(Long userId);
 }

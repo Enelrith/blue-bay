@@ -112,8 +112,8 @@ public class UserService {
     @Transactional
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     public AddUserInformationResponse addUserInformation(Long id, AddUserInformationRequest request) {
-        if (userInformationRepository.existsById(id)) throw new UserInformationAlreadyExistsException("This user already has a profile");
         var user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (userInformationRepository.existsByUser_Id(id)) throw new UserInformationAlreadyExistsException("This user already has a profile");
 
         var userInformation = userInformationMapper.toEntity(request);
         userInformation.setUser(user);
