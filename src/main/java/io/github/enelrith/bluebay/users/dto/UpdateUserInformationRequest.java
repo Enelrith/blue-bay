@@ -34,7 +34,6 @@ public record UpdateUserInformationRequest(@Size(message = "First name must be b
                                            @Size(message = "Nationality must be between {min} and {max} characters long", min = 1, max = 100)
                                            @Schema(description = "Updated nationality", example = "French")
                                            String nationality,
-                                           @Size(message = "ID document type must be between {min} and {max} characters long", min = 1, max = 50)
                                            @Schema(description = "Updated ID document type", example = "NATIONAL_ID")
                                            UserIdDocumentType idDocumentType,
                                            @Size(message = "First name must be between {min} and {max} characters long", min = 1, max = 100)

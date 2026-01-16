@@ -39,8 +39,7 @@ public record AddUserInformationRequest(@NotBlank(message = "First name cannot b
                                         @Size(message = "Nationality must be between {min} and {max} characters long", min = 1, max = 100)
                                         @Schema(description = "User's nationality", example = "Greek")
                                         String nationality,
-                                        @NotBlank(message = "The ID document type cannot be blank")
-                                        @Size(message = "ID document type must be between {min} and {max} characters long", min = 1, max = 50)
+                                        @NotNull(message = "The ID document type cannot be null")
                                         @Schema(description = "Type of ID document provided", example = "PASSPORT")
                                         UserIdDocumentType idDocumentType,
                                         @NotNull(message = "The id document number cannot be null")
